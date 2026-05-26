@@ -97,6 +97,17 @@ Route::middleware(['auth'])->group(function () {
         'cambioestado'
     ])->name('cambioestadometodopago');
 
+    
+// Ruta temporal para migraciones en Render
+Route::get('/migrar', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return '✅ Migraciones ejecutadas correctamente!<br><pre>' . \Illuminate\Support\Facades\Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
+
     // =========================
     // PAGOS
     // =========================
