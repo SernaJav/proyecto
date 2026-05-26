@@ -1,0 +1,313 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Producto;
+use Illuminate\Http\Request;
+use App\Http\Requests\ProductoRequest;
+
+class ProductoController extends Controller
+{
+    // =========================
+    // LISTAR PRODUCTOS
+    // =========================
+    public function index()
+    {
+        // =========================
+        // traer todos los productos
+        // datatable hará la paginación
+        // =========================
+        $productos = Producto::all();
+
+        // =========================
+        // enviar vista
+        // =========================
+        return view(
+            'productos.index',
+            compact('productos')
+        );
+    }
+
+    // =========================
+    // FORMULARIO CREAR
+    // =========================
+    public function create()
+    {
+        return view('productos.create');
+    }
+
+    // =========================
+    // GUARDAR PRODUCTO
+    // =========================
+    public function store(ProductoRequest $request)
+    {
+        try {
+
+            // =========================
+            // imagen por defecto
+            // =========================
+            $rutaImagen = 'images/productos/default.png';
+
+            // =========================
+            // verificar imagen
+            // =========================
+            if ($request->hasFile('imagen')) {
+
+                // =========================
+                // obtener archivo
+                // =========================
+                $file = $request->file('imagen');
+
+                // =========================
+                // crear nombre único
+                // =========================
+                $nombre = time() . '.' .
+                    $file->getClientOriginalExtension();
+
+                // =========================
+                // mover imagen
+                // =========================
+                $file->move(
+                    public_path('images/productos'),
+                    $nombre
+                );
+
+                // =========================
+                // guardar ruta
+                // =========================
+                $rutaImagen =
+                    'images/productos/' . $nombre;
+            }
+
+            // =========================
+            // crear producto
+            // =========================
+            Producto::create([
+
+                'nombre' => $request->nombre,
+
+                'preciocompra' => $request->preciocompra,
+
+                'descripcion' => $request->descripcion,
+
+                'stockmaximo' => $request->stockmaximo,
+
+                // =========================
+                // stock inicial
+                // =========================
+                'stock' => 0,
+
+                'imagen' => $rutaImagen,
+
+                'estado' => 1,
+
+                'registradopor' => auth()->user()->name
+            ]);
+
+            // =========================
+            // volver al index
+            // =========================
+            return redirect()
+                ->route('productos.index')
+                ->with(
+                    'success',
+                    'Producto creado correctamente'
+                );
+
+        } catch (\Exception $e) {
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
+        }
+    }
+
+    // =========================
+    // MOSTRAR PRODUCTO
+    // =========================
+    public function show($id)
+    {
+        // =========================
+        // buscar producto
+        // =========================
+        $producto = Producto::findOrFail($id);
+
+        // =========================
+        // enviar vista
+        // =========================
+        return view(
+            'productos.show',
+            compact('producto')
+        );
+    }
+
+    // =========================
+    // FORMULARIO EDITAR
+    // =========================
+    public function edit($id)
+    {
+        // =========================
+        // buscar producto
+        // =========================
+        $producto = Producto::findOrFail($id);
+
+        // =========================
+        // enviar vista
+        // =========================
+        return view(
+            'productos.edit',
+            compact('producto')
+        );
+    }
+
+    // =========================
+    // ACTUALIZAR PRODUCTO
+    // =========================
+    public function update(
+        ProductoRequest $request,
+        $id
+    )
+    {
+        try {
+
+            // =========================
+            // buscar producto
+            // =========================
+            $producto = Producto::findOrFail($id);
+
+            // =========================
+            // mantener imagen actual
+            // =========================
+            $rutaImagen = $producto->imagen;
+
+            // =========================
+            // nueva imagen
+            // =========================
+            if ($request->hasFile('imagen')) {
+
+                $file = $request->file('imagen');
+
+                $nombre = time() . '.' .
+                    $file->getClientOriginalExtension();
+
+                $file->move(
+                    public_path('images/productos'),
+                    $nombre
+                );
+
+                $rutaImagen =
+                    'images/productos/' . $nombre;
+            }
+
+            // =========================
+            // actualizar producto
+            // =========================
+            $producto->update([
+
+                'nombre' => $request->nombre,
+
+                'preciocompra' => $request->preciocompra,
+
+                'descripcion' => $request->descripcion,
+
+                'stockmaximo' => $request->stockmaximo,
+
+                'imagen' => $rutaImagen
+            ]);
+
+            return redirect()
+                ->route('productos.index')
+                ->with(
+                    'success',
+                    'Producto actualizado correctamente'
+                );
+
+        } catch (\Exception $e) {
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
+        }
+    }
+
+    // =========================
+    // ELIMINAR PRODUCTO
+    // =========================
+    public function destroy($id)
+    {
+        try {
+
+            // =========================
+            // buscar producto
+            // =========================
+            $producto = Producto::findOrFail($id);
+
+            // =========================
+            // eliminar detalles asociados
+            // =========================
+            $producto->detallesCompras()->delete();
+
+            // =========================
+            // eliminar producto
+            // =========================
+            $producto->delete();
+
+            return redirect()
+                ->route('productos.index')
+                ->with(
+                    'success',
+                    'Producto eliminado correctamente'
+                );
+
+        } catch (\Exception $e) {
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
+        }
+    }
+
+    // =========================
+    // CAMBIAR ESTADO
+    // =========================
+    public function cambioestado(Request $request)
+    {
+        // =========================
+        // buscar producto
+        // =========================
+        $producto = Producto::find($request->id);
+
+        // =========================
+        // validar existencia
+        // =========================
+        if (!$producto) {
+
+            return response()->json([
+
+                'success' => false,
+
+                'message' => 'Producto no encontrado'
+            ]);
+        }
+
+        // =========================
+        // cambiar estado
+        // =========================
+        $producto->estado = $request->estado;
+
+        $producto->save();
+
+        // =========================
+        // responder
+        // =========================
+        return response()->json([
+
+            'success' => true,
+
+            'message' => 'Estado actualizado'
+        ]);
+    }
+}

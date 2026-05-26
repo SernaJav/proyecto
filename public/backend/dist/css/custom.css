@@ -1,0 +1,378 @@
+/* =========================================================
+   CUSTOM.CSS
+   Estilos personalizados del sistema
+========================================================= */
+
+
+/* =========================================================
+   LOGO SIDEBAR
+========================================================= */
+
+/* Contenedor del logo */
+.logo-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Imagen logo */
+.logo-sidebar{
+    opacity: .95;
+    height: 95px;
+    width: auto;
+    transition: all 0.3s ease;
+}
+
+/* Sidebar cerrado */
+.sidebar-collapse .logo-container{
+    height: 70px;
+}
+
+/* Logo pequeño automático */
+.sidebar-collapse .logo-sidebar{
+    height: 42px;
+}
+
+/* Hover cuando pasa el mouse */
+.sidebar-mini.sidebar-collapse .main-sidebar:hover .logo-sidebar{
+    height: 75px;
+}
+
+
+/* =========================================================
+   SIDEBAR GENERAL
+========================================================= */
+
+.main-sidebar{
+    transition: all 0.3s ease;
+}
+
+/* Texto menú */
+.nav-sidebar .nav-link p{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Iconos */
+.nav-sidebar .nav-icon{
+    margin-right: 8px;
+    font-size: 15px;
+}
+
+/* Hover links */
+.nav-sidebar .nav-link:hover{
+    background-color: rgba(255,255,255,0.08);
+    border-radius: 6px;
+}
+
+/* Item activo */
+.nav-sidebar .nav-link.active{
+    background-color: #c53030 !important;
+    color: white !important;
+    border-radius: 6px;
+}
+
+/* Separación submenus */
+.nav-treeview{
+    padding-left: 10px;
+}
+
+
+/* =========================================================
+   SCROLL SIDEBAR
+========================================================= */
+
+.sidebar{
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+/* Chrome */
+.sidebar::-webkit-scrollbar{
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb{
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   TABLAS
+========================================================= */
+
+.table thead th{
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.table tbody td{
+    vertical-align: middle;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.btn{
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover{
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.card{
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header{
+    font-weight: 600;
+}
+/* =====================================
+   FONDO GENERAL
+===================================== */
+
+.content-wrapper {
+
+    background: #f4f6f9;
+
+}
+
+
+/* =====================================
+   TARJETA PRINCIPAL
+===================================== */
+
+.custom-card {
+
+    border: none;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+
+}
+
+
+/* =====================================
+   HEADER
+===================================== */
+
+.custom-header {
+
+    background: linear-gradient(135deg, #343a40, #495057);
+
+    color: white;
+
+    padding: 18px;
+
+    font-size: 24px;
+
+    font-weight: bold;
+
+    border: none;
+
+}
+
+
+/* =====================================
+   TABLA
+===================================== */
+
+.custom-table {
+
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+}
+
+
+/* =====================================
+   ENCABEZADO TABLA
+===================================== */
+
+.custom-table thead {
+
+    background: #212529;
+
+    color: white;
+
+}
+
+
+.custom-table thead th {
+
+    border: none;
+
+    padding: 14px;
+
+    font-size: 14px;
+
+}
+
+
+/* =====================================
+   FILAS
+===================================== */
+
+.custom-table tbody tr {
+
+    transition: all 0.2s ease;
+
+}
+
+
+.custom-table tbody tr:hover {
+
+    background: #f1f3f5;
+
+    transform: scale(1.002);
+
+}
+
+
+/* =====================================
+   CELDAS
+===================================== */
+
+.custom-table td {
+
+    vertical-align: middle;
+
+    padding: 14px;
+
+    border-top: 1px solid #edf2f7;
+
+}
+
+
+/* =====================================
+   BOTON NUEVO
+===================================== */
+
+.btn-modern {
+
+    border-radius: 12px;
+
+    padding: 8px 14px;
+
+    font-weight: bold;
+
+    transition: 0.3s;
+
+}
+
+
+.btn-modern:hover {
+
+    transform: translateY(-2px);
+
+}
+
+
+/* =====================================
+   BOTONES ACCIONES
+===================================== */
+
+.btn-action {
+
+    border-radius: 10px;
+
+    margin-right: 3px;
+
+    transition: 0.2s;
+
+}
+
+
+.btn-action:hover {
+
+    transform: scale(1.08);
+
+}
+
+
+/* =====================================
+   SWITCHES
+===================================== */
+
+.toggle.btn {
+
+    border-radius: 20px !important;
+
+}
+
+
+/* =====================================
+   DATATABLES
+===================================== */
+
+.dataTables_wrapper .dataTables_filter input {
+
+    border-radius: 10px;
+
+    border: 1px solid #ced4da;
+
+    padding: 6px 10px;
+
+}
+
+
+.dataTables_wrapper .dataTables_length select {
+
+    border-radius: 10px;
+
+}
+
+
+/* =====================================
+   PAGINACION
+===================================== */
+
+.page-item.active .page-link {
+
+    background: #343a40;
+
+    border-color: #343a40;
+
+}
+
+
+.page-link {
+
+    color: #343a40;
+
+    border-radius: 8px !important;
+
+    margin: 0 3px;
+
+}
+
+
+/* =========================================================
+   TRANSICIONES GENERALES
+========================================================= */
+
+a,
+button,
+.card,
+.small-box{
+    transition: all 0.2s ease;
+}
