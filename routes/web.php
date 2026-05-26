@@ -19,6 +19,35 @@ Route::get('/', function () {
 });
 
 // =========================
+// RUTA TEMPORAL PARA MIGRACIONES (NO requiere autenticación)
+// =========================
+Route::get('/migrar', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return '✅ Migraciones ejecutadas correctamente!<br><pre>' . \Illuminate\Support\Facades\Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
+
+// =========================
+// RUTA PARA VER RUTAS DISPONIBLES (temporal)
+// =========================
+Route::get('/rutas', function() {
+    $routes = \Illuminate\Support\Facades\Route::getRoutes();
+    $output = '<h1>Rutas disponibles en tu aplicación:</h1><ul>';
+    foreach($routes as $route) {
+        if ($route->getName()) {
+            $output .= '<li><strong>' . $route->uri() . '</strong> → ' . $route->getName() . '</li>';
+        } else {
+            $output .= '<li>' . $route->uri() . '</li>';
+        }
+    }
+    $output .= '</ul>';
+    return $output;
+});
+
+// =========================
 // RUTAS DE PRUEBA (ERRORES)
 // =========================
 Route::get('/test-404', function () {
@@ -43,7 +72,7 @@ Route::get('/test-500', function () {
 Auth::routes();
 
 // =========================
-// RUTAS PROTEGIDAS
+// RUTAS PROTEGIDAS (requieren autenticación)
 // =========================
 Route::middleware(['auth'])->group(function () {
 
@@ -97,17 +126,6 @@ Route::middleware(['auth'])->group(function () {
         'cambioestado'
     ])->name('cambioestadometodopago');
 
-    
-// Ruta temporal para migraciones en Render
-Route::get('/migrar', function() {
-    try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return '✅ Migraciones ejecutadas correctamente!<br><pre>' . \Illuminate\Support\Facades\Artisan::output() . '</pre>';
-    } catch (\Exception $e) {
-        return '❌ Error: ' . $e->getMessage();
-    }
-});
-
     // =========================
     // PAGOS
     // =========================
@@ -117,4 +135,5 @@ Route::get('/migrar', function() {
         PagoController::class,
         'cambioestado'
     ])->name('cambioestadopago');
+    
 });
