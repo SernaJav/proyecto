@@ -9,41 +9,34 @@ RUN apt-get update && apt-get install -y \
     zip \
     libpq-dev
 
-# Extensiones PHP
+# Instalar extensiones PostgreSQL
 RUN docker-php-ext-install pdo pdo_pgsql
 
-# Composer
+# Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Carpeta app
+# Directorio Laravel
 WORKDIR /var/www
 
 # Copiar proyecto
 COPY . .
 
-# Instalar Laravel
+# Instalar dependencias Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Permisos Laravel
+# Permisos
 RUN chmod -R 777 storage bootstrap/cache
 
-# Config nginx
+# Configuración nginx
 COPY nginx.conf /etc/nginx/sites-available/default
 
-# Limpiar cache
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan route:clear
-RUN php artisan view:clear
+# SOLO limpiar config
+RUN php artisan config:clear || true
 
-# Migraciones automáticas
-RUN php artisan migrate --force || true
-
-# Cache producción
-RUN php artisan config:cache
-
-# Puerto render
+# Puerto Render
 EXPOSE 10000
 
-# Inicio
-CMD service nginx start && php-fpm -F
+# Iniciar Laravel + migraciones automáticas
+CMD php artisan migrate --force || true && \
+    service nginx start && \
+    php-fpm -F
