@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class DetallecompraFactory extends Factory
 {
-    protected $model = Detallecompra::class;
+    protected $model = DetalleCompra::class;
     /**
      * Define the model's default state.
      *
@@ -27,7 +27,7 @@ class DetallecompraFactory extends Factory
             'producto_id' => $this->faker->randomElement(\App\Models\Producto::pluck('id')->toArray()),
             'cantidad' => $cantidad,
             'subtotal' => $cantidad * $precio,
-            'registradopor' => $this->faker->randomElement(config('datos.registradopor')),
+            'registradopor' => 'Seeder',
         ];
     }
 }

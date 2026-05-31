@@ -26,7 +26,7 @@ class MetodopagoFactory extends Factory
             'nombre' => $this->faker->randomElement($metodos),
             'descripcion' => $this->faker->sentence(),
             'estado' => '1',
-            'registradopor' => $this->faker->randomElement(config('datos.registradopor')),
+            'registradopor' => 'Seeder',
         ];
     }
 }

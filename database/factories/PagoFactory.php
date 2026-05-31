@@ -25,7 +25,7 @@ class PagoFactory extends Factory
             'fechapago' => $this->faker->datetime(),
             'monto' => $this->faker->randomFloat(2, 50, 500),
             'metodopago_id' => $this->faker->randomElement(\App\Models\Metodopago::pluck('id')->toArray()),
-            'registradopor' => $this->faker->randomElement(config('datos.registradopor')),
+            'registradopor' => 'Seeder',
         ];
     }
 }

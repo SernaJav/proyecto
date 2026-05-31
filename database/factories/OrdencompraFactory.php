@@ -26,7 +26,7 @@ class OrdencompraFactory extends Factory
             'tipopago' => $this->faker->randomElement(['contado', 'crédito']),
             'saldopendiente' => $this->faker->randomFloat(2, 0, 500),
             'estado' => $this->faker->randomElement(['pendiente', 'pagado', 'cancelado']),
-            'registradopor' => $this->faker->randomElement(config('datos.registradopor')),
+            'registradopor' => 'Seeder',
         ];
     }
 }

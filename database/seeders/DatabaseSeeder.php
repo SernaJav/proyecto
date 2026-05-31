@@ -45,101 +45,19 @@ class DatabaseSeeder extends Seeder
         */
 
         $productos = [
-
-            [
-                'nombre' => 'Arroz Diana',
-                'precio' => 3500,
-                'imagen' => 'arroz.png'
-            ],
-
-            [
-                'nombre' => 'Azucar Manuelita',
-                'precio' => 4200,
-                'imagen' => 'azucar.png'
-            ],
-
-            [
-                'nombre' => 'Aceite Premier',
-                'precio' => 12500,
-                'imagen' => 'aceite.png'
-            ],
-
-            [
-                'nombre' => 'Cafe Aguila Roja',
-                'precio' => 9800,
-                'imagen' => 'cafe.png'
-            ],
-
-            [
-                'nombre' => 'Harina Haz de Oros',
-                'precio' => 4300,
-                'imagen' => 'harina.png'
-            ],
-
-            [
-                'nombre' => 'Leche Alqueria',
-                'precio' => 4200,
-                'imagen' => 'leche.png'
-            ],
-
-            [
-                'nombre' => 'Pan Integral',
-                'precio' => 2800,
-                'imagen' => 'pan.png'
-            ],
-
-            [
-                'nombre' => 'Pasta Doria',
-                'precio' => 3500,
-                'imagen' => 'pasta.png'
-            ],
-
-            [
-                'nombre' => 'Sal Refisal',
-                'precio' => 2200,
-                'imagen' => 'sal.png'
-            ],
-
-            [
-                'nombre' => 'Galletas Festival',
-                'precio' => 3200,
-                'imagen' => 'galletas.png'
-            ],
-
-            [
-                'nombre' => 'Chocolate Corona',
-                'precio' => 4800,
-                'imagen' => 'galletas.png'
-            ],
-
-            [
-                'nombre' => 'Atun Van Camps',
-                'precio' => 7500,
-                'imagen' => 'aceite.png'
-            ],
-
-            [
-                'nombre' => 'Lentejas',
-                'precio' => 2800,
-                'imagen' => 'arroz.png'
-            ],
-
-            [
-                'nombre' => 'Frijoles',
-                'precio' => 3500,
-                'imagen' => 'arroz.png'
-            ],
-
-            [
-                'nombre' => 'Avena Quaker',
-                'precio' => 6500,
-                'imagen' => 'harina.png'
-            ]
-
+            ['nombre' => 'Jabón', 'precio' => 4500, 'imagen' => 'images/productos/jabon.png'],
+            ['nombre' => 'Aceite', 'precio' => 8000, 'imagen' => 'images/productos/aceite.png'],
+            ['nombre' => 'Harina', 'precio' => 3200, 'imagen' => 'images/productos/harina.png'],
+            ['nombre' => 'Arroz', 'precio' => 2500, 'imagen' => 'images/productos/arroz.png'],
+            ['nombre' => 'Azúcar', 'precio' => 2800, 'imagen' => 'images/productos/azucar.png'],
+            ['nombre' => 'Leche', 'precio' => 4600, 'imagen' => 'images/productos/leche.png'],
+            ['nombre' => 'Café', 'precio' => 16000, 'imagen' => 'images/productos/cafe.png'],
+            ['nombre' => 'Sal', 'precio' => 5500, 'imagen' => 'images/productos/sal.png'],
+            ['nombre' => 'Pasta', 'precio' => 2200, 'imagen' => 'images/productos/pasta.png'],
+            ['nombre' => 'Galletas', 'precio' => 8200, 'imagen' => 'images/productos/galletas.png'],
         ];
 
         foreach ($productos as $producto) {
-
             Producto::create([
                 'nombre' => $producto['nombre'],
                 'preciocompra' => $producto['precio'],
@@ -148,7 +66,7 @@ class DatabaseSeeder extends Seeder
                 'stock' => rand(50, 150),
                 'imagen' => $producto['imagen'],
                 'estado' => 1,
-                'registradopor' => 'Seeder'
+                'registradopor' => 'Seeder',
             ]);
         }
 
@@ -158,33 +76,21 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        MetodoPago::create([
-            'nombre' => 'Efectivo',
-            'descripcion' => 'Pago en efectivo',
-            'estado' => 1,
-            'registradopor' => 'Seeder'
-        ]);
+        $metodosPago = [
+            ['nombre' => 'Efectivo', 'descripcion' => 'Pago en efectivo'],
+            ['nombre' => 'Transferencia', 'descripcion' => 'Transferencia bancaria'],
+            ['nombre' => 'Tarjeta Débito', 'descripcion' => 'Tarjeta débito'],
+            ['nombre' => 'Tarjeta Crédito', 'descripcion' => 'Tarjeta crédito'],
+        ];
 
-        MetodoPago::create([
-            'nombre' => 'Transferencia',
-            'descripcion' => 'Transferencia bancaria',
-            'estado' => 1,
-            'registradopor' => 'Seeder'
-        ]);
-
-        MetodoPago::create([
-            'nombre' => 'Tarjeta Debito',
-            'descripcion' => 'Tarjeta débito',
-            'estado' => 1,
-            'registradopor' => 'Seeder'
-        ]);
-
-        MetodoPago::create([
-            'nombre' => 'Tarjeta Credito',
-            'descripcion' => 'Tarjeta crédito',
-            'estado' => 1,
-            'registradopor' => 'Seeder'
-        ]);
+        foreach ($metodosPago as $metodo) {
+            MetodoPago::create([
+                'nombre' => $metodo['nombre'],
+                'descripcion' => $metodo['descripcion'],
+                'estado' => 1,
+                'registradopor' => 'Seeder',
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -192,7 +98,7 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        OrdenCompra::factory(50)->create();
+        $ordenes = OrdenCompra::factory(20)->create();
 
         /*
         |--------------------------------------------------------------------------
@@ -200,7 +106,7 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        DetalleCompra::factory(100)->create();
+        DetalleCompra::factory(40)->create();
 
         /*
         |--------------------------------------------------------------------------
@@ -208,6 +114,27 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
 
-        Pago::factory(50)->create();
+        $metodoPagoIds = MetodoPago::pluck('id')->toArray();
+
+        foreach ($ordenes as $orden) {
+            Pago::create([
+                'ordencompra_id' => $orden->id,
+                'fechapago' => now()->subDays(rand(0, 90)),
+                'monto' => $this->calculatePaymentAmount($orden->total),
+                'metodopago_id' => $this->fakerConsultMethod($metodoPagoIds),
+                'registradopor' => 'Seeder',
+            ]);
+        }
+    }
+
+    private function calculatePaymentAmount(float $total): float
+    {
+        $monto = $total * (0.45 + rand(0, 50) / 100);
+        return round(min($total, max(10, $monto)), 2);
+    }
+
+    private function fakerConsultMethod(array $metodoPagoIds): int
+    {
+        return $metodoPagoIds[array_rand($metodoPagoIds)];
     }
 }
