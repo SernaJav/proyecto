@@ -12,13 +12,13 @@ class ProveedorFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => fake()->name(),
-            'documento' => fake()->numerify('##########'),
-            'direccion' => fake()->address(),
-            'telefono' => fake()->phoneNumber(),
-            'email' => fake()->unique()->safeEmail(),
+            'nombre' => $this->faker->name(),
+            'documento' => $this->faker->numerify('##########'),
+            'direccion' => $this->faker->address(),
+            'telefono' => $this->faker->phoneNumber(),
+            'email' => $this->faker->unique()->safeEmail(),
             'estado' => 1,
-            'registradopor' => 'Seeder'
+            'registradopor' => 'Seeder',
         ];
     }
 }
