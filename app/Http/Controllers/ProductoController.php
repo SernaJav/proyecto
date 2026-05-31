@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductoRequest;
 use App\Models\Producto;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Http\Request;
@@ -68,10 +69,19 @@ class ProductoController extends Controller
                     $file->getClientOriginalExtension();
 
                 // =========================
+                // crear directorio si no existe
+                // =========================
+                $directorio = public_path('images/productos');
+
+                if (! File::exists($directorio)) {
+                    File::makeDirectory($directorio, 0755, true);
+                }
+
+                // =========================
                 // mover imagen
                 // =========================
                 $file->move(
-                    public_path('images/productos'),
+                    $directorio,
                     $nombre
                 );
 
@@ -194,8 +204,14 @@ class ProductoController extends Controller
                 $nombre = time() . '.' .
                     $file->getClientOriginalExtension();
 
+                $directorio = public_path('images/productos');
+
+                if (! File::exists($directorio)) {
+                    File::makeDirectory($directorio, 0755, true);
+                }
+
                 $file->move(
-                    public_path('images/productos'),
+                    $directorio,
                     $nombre
                 );
 

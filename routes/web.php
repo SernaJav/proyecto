@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\OrdencompraController;
+use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\DetalleCompraController;
 use App\Http\Controllers\MetodoPagoController;
 use App\Http\Controllers\PagoController;
@@ -149,11 +149,11 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
-    Route::resource('ordencompras', OrdencompraController::class);
+    Route::resource('ordencompras', OrdenCompraController::class);
 
     Route::get(
         'cambioestadoordencompra',
-        [OrdencompraController::class, 'cambioestado']
+        [OrdenCompraController::class, 'cambioestado']
     )->name('cambioestadoordencompra');
 
     /*

@@ -37,18 +37,19 @@
                         {{-- ========================= --}}
                         {{-- IMAGEN --}}
                         {{-- ========================= --}}
-                        <div class="col-md-4 text-center">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
 
                             @if($producto->imagen)
 
                                 <img
                                     src="{{ asset($producto->imagen) }}"
-                                    style="width: 250px; height: 250px; object-fit: cover; border-radius: 12px;"
+                                    class="img-fluid rounded shadow-sm"
+                                    style="max-width: 100%; max-height: 360px; object-fit: contain;"
                                 >
 
                             @else
 
-                                <div style="width:250px;height:250px;background:#eee;display:flex;align-items:center;justify-content:center;border-radius:12px;">
+                                <div style="max-width:100%;min-height:250px;background:#eee;display:flex;align-items:center;justify-content:center;border-radius:12px;padding:1.5rem;">
                                     Sin imagen
                                 </div>
 

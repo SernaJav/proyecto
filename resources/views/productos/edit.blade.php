@@ -132,9 +132,10 @@
                                                     @if($producto->imagen)
                                                         <img
                                                             id="imagePreview"
-                                                            class="image-preview"
+                                                            class="image-preview img-fluid"
                                                             src="{{ asset($producto->imagen) }}"
                                                             alt="Vista previa"
+                                                            style="max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 12px;"
                                                         >
                                                     @else
                                                         <div class="image-preview-placeholder" id="imagePreviewPlaceholder">

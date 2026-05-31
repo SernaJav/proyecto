@@ -9,6 +9,7 @@
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md border border-gray-200">
         <div class="text-center mb-8">
+            <img src="{{ asset('logo.png') }}" alt="Logo" class="mx-auto h-20 w-auto mb-4" />
             <h1 class="text-3xl font-bold text-gray-900 mb-2">Bienvenido</h1>
             <p class="text-gray-600">Elige una opción para continuar</p>
         </div>
