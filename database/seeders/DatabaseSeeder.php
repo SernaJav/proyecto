@@ -8,7 +8,7 @@ use App\Models\Proveedor;
 use App\Models\Producto;
 use App\Models\Metodopago;
 use App\Models\Ordencompra;
-use App\Models\Detallecompra;
+use App\Models\DetalleCompra;
 use App\Models\Pago;
 
 class DatabaseSeeder extends Seeder
@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
         // =========================
         // DETALLES
         // =========================
-        Detallecompra::factory(40)->create();
+        DetalleCompra::factory(40)->create();
 
         // =========================
         // PAGOS

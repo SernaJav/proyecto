@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\Detallecompra;
+use App\Models\DetalleCompra;
 use App\Models\Ordencompra;
 use App\Models\Producto;    
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Detallecompra>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DetalleCompra>
  */
 class DetallecompraFactory extends Factory
 {

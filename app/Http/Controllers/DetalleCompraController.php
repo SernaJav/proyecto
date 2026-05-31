@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Detallecompra;
+use App\Models\DetalleCompra;
 use App\Models\Ordencompra;
 use App\Models\Producto;
 
