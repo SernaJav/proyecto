@@ -357,7 +357,7 @@
                                     >
 
                                         <i class="fas fa-save mr-1"></i>
-                                        Guardar Orden
+                                        Guardar
 
                                     </button>
 

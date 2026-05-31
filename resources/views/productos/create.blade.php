@@ -353,7 +353,7 @@
 
                                         <i class="fas fa-save mr-1"></i>
 
-                                        Guardar Producto
+                                        Guardar
 
                                     </button>
 

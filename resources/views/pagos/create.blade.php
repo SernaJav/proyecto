@@ -26,6 +26,20 @@
 
                 </div>
 
+                <div class="col-sm-6 text-right">
+
+                    <a
+                        href="{{ route('pagos.index') }}"
+                        class="btn btn-secondary shadow-sm"
+                    >
+
+                        <i class="fas fa-arrow-left mr-1"></i>
+                        Volver
+
+                    </a>
+
+                </div>
+
             </div>
 
         </div>
@@ -311,7 +325,7 @@
                                     >
 
                                         <i class="fas fa-save mr-1"></i>
-                                        Guardar Pago
+                                        Guardar
 
                                     </button>
 

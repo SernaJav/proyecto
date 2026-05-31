@@ -1,357 +1,220 @@
 @extends('layouts.app')
 
-@section('title','Crear Proveedor')
+@section('title','Editar Orden de Compra')
 
 @section('content')
 
 <div class="content-wrapper">
-
-    {{-- ========================= --}}
-    {{-- Encabezado --}}
-    {{-- ========================= --}}
     <section class="content-header">
         <div class="container-fluid">
-
             <div class="row mb-2">
-
                 <div class="col-sm-6">
                     <h1 class="page-title">
-                        <i class="fas fa-user-plus mr-2"></i>
-                        Crear Proveedor
+                        <i class="fas fa-edit mr-2"></i>
+                        Editar Orden de Compra
                     </h1>
                 </div>
-
                 <div class="col-sm-6 text-right">
-
                     <a
-                        href="{{ route('proveedores.index') }}"
+                        href="{{ route('ordencompras.index') }}"
                         class="btn btn-secondary shadow-sm"
                     >
                         <i class="fas fa-arrow-left mr-1"></i>
                         Volver
                     </a>
-
                 </div>
-
             </div>
-
         </div>
     </section>
 
-    {{-- ========================= --}}
-    {{-- Mensajes --}}
-    {{-- ========================= --}}
     @include('layouts.partial.msg')
 
-    {{-- ========================= --}}
-    {{-- Contenido --}}
-    {{-- ========================= --}}
     <section class="content">
-
         <div class="container-fluid">
-
             <div class="row justify-content-center">
-
                 <div class="col-lg-10">
-
                     <div class="card modern-card">
-
-                        {{-- ========================= --}}
-                        {{-- Header moderno --}}
-                        {{-- ========================= --}}
                         <div class="card-header modern-card-header">
-
                             <h3 class="card-title">
-
-                                <i class="fas fa-building mr-2"></i>
-                                Información del proveedor
-
+                                <i class="fas fa-shopping-cart mr-2"></i>
+                                Información de la Orden
                             </h3>
-
                         </div>
 
-                        {{-- ========================= --}}
-                        {{-- Formulario --}}
-                        {{-- ========================= --}}
                         <form
                             method="POST"
-                            action="{{ route('proveedores.store') }}"
+                            action="{{ route('ordencompras.update', $ordencompra) }}"
                         >
-
                             @csrf
+                            @method('PATCH')
 
                             <div class="card-body">
-
                                 <div class="row">
-
-                                    {{-- ========================= --}}
-                                    {{-- Nombre --}}
-                                    {{-- ========================= --}}
                                     <div class="col-md-6">
-
                                         <div class="form-group">
-
                                             <label class="form-label">
-
-                                                Nombre Completo
-
+                                                Fecha
                                                 <span class="text-danger">*</span>
-
                                             </label>
-
                                             <div class="input-group">
-
                                                 <div class="input-group-prepend">
-
                                                     <span class="input-group-text">
-
-                                                        <i class="fas fa-user"></i>
-
+                                                        <i class="fas fa-calendar"></i>
                                                     </span>
-
                                                 </div>
-
                                                 <input
-                                                    type="text"
-                                                    name="nombre"
+                                                    type="date"
+                                                    name="fecha"
                                                     class="form-control modern-input"
-                                                    placeholder="Ingrese el nombre"
-                                                    autocomplete="off"
-                                                    value="{{ old('nombre') }}"
+                                                    value="{{ old('fecha', $ordencompra->fecha->format('Y-m-d')) }}"
+                                                    required
                                                 >
-
                                             </div>
-
                                         </div>
-
                                     </div>
 
-                                    {{-- ========================= --}}
-                                    {{-- Documento --}}
-                                    {{-- ========================= --}}
                                     <div class="col-md-6">
-
                                         <div class="form-group">
-
                                             <label class="form-label">
-
-                                                Documento
-
+                                                Proveedor
                                                 <span class="text-danger">*</span>
-
                                             </label>
-
                                             <div class="input-group">
-
                                                 <div class="input-group-prepend">
-
                                                     <span class="input-group-text">
-
-                                                        <i class="fas fa-id-card"></i>
-
+                                                        <i class="fas fa-truck"></i>
                                                     </span>
-
                                                 </div>
-
-                                                <input
-                                                    type="text"
-                                                    name="documento"
+                                                <select
+                                                    name="proveedor_id"
                                                     class="form-control modern-input"
-                                                    placeholder="Ingrese el documento"
-                                                    autocomplete="off"
-                                                    value="{{ old('documento') }}"
+                                                    required
                                                 >
-
+                                                    <option value="">Seleccione proveedor</option>
+                                                    @foreach($proveedores as $proveedor)
+                                                        <option
+                                                            value="{{ $proveedor->id }}"
+                                                            {{ old('proveedor_id', $ordencompra->proveedor_id) == $proveedor->id ? 'selected' : '' }}
+                                                        >
+                                                            {{ $proveedor->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
-
                                         </div>
-
                                     </div>
 
-                                    {{-- ========================= --}}
-                                    {{-- Teléfono --}}
-                                    {{-- ========================= --}}
                                     <div class="col-md-6">
-
                                         <div class="form-group">
-
                                             <label class="form-label">
-
-                                                Teléfono
-
-                                            </label>
-
-                                            <div class="input-group">
-
-                                                <div class="input-group-prepend">
-
-                                                    <span class="input-group-text">
-
-                                                        <i class="fas fa-phone"></i>
-
-                                                    </span>
-
-                                                </div>
-
-                                                <input
-                                                    type="text"
-                                                    name="telefono"
-                                                    class="form-control modern-input"
-                                                    placeholder="Ingrese el teléfono"
-                                                    autocomplete="off"
-                                                    value="{{ old('telefono') }}"
-                                                >
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    {{-- ========================= --}}
-                                    {{-- Email --}}
-                                    {{-- ========================= --}}
-                                    <div class="col-md-6">
-
-                                        <div class="form-group">
-
-                                            <label class="form-label">
-
-                                                Correo Electrónico
-
+                                                Total de la Compra
                                                 <span class="text-danger">*</span>
-
                                             </label>
-
                                             <div class="input-group">
-
                                                 <div class="input-group-prepend">
-
                                                     <span class="input-group-text">
-
-                                                        <i class="fas fa-envelope"></i>
-
+                                                        <i class="fas fa-dollar-sign"></i>
                                                     </span>
-
                                                 </div>
-
                                                 <input
-                                                    type="email"
-                                                    name="email"
+                                                    type="number"
+                                                    step="0.01"
+                                                    name="total"
                                                     class="form-control modern-input"
-                                                    placeholder="Ingrese el correo"
-                                                    autocomplete="off"
-                                                    value="{{ old('email') }}"
+                                                    placeholder="Ingrese el total"
+                                                    value="{{ old('total', $ordencompra->total) }}"
+                                                    required
                                                 >
-
                                             </div>
-
                                         </div>
-
                                     </div>
 
-                                    {{-- ========================= --}}
-                                    {{-- Dirección --}}
-                                    {{-- ========================= --}}
-                                    <div class="col-md-12">
-
+                                    <div class="col-md-6">
                                         <div class="form-group">
-
                                             <label class="form-label">
-
-                                                Dirección
-
+                                                Tipo de Pago
+                                                <span class="text-danger">*</span>
                                             </label>
-
                                             <div class="input-group">
-
                                                 <div class="input-group-prepend">
-
                                                     <span class="input-group-text">
-
-                                                        <i class="fas fa-map-marker-alt"></i>
-
+                                                        <i class="fas fa-credit-card"></i>
                                                     </span>
-
                                                 </div>
-
-                                                <input
-                                                    type="text"
-                                                    name="direccion"
+                                                <select
+                                                    name="tipopago"
                                                     class="form-control modern-input"
-                                                    placeholder="Ingrese la dirección"
-                                                    autocomplete="off"
-                                                    value="{{ old('direccion') }}"
+                                                    required
                                                 >
-
+                                                    <option value="">Seleccione</option>
+                                                    @foreach($metodospago as $metodo)
+                                                        @if($metodo->estado == 1)
+                                                            <option
+                                                                value="{{ $metodo->nombre }}"
+                                                                {{ old('tipopago', $ordencompra->tipopago) == $metodo->nombre ? 'selected' : '' }}
+                                                            >
+                                                                {{ $metodo->nombre }}
+                                                            </option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
                                             </div>
-
                                         </div>
-
                                     </div>
 
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Saldo Pendiente</label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-wallet"></i>
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    name="saldopendiente"
+                                                    class="form-control modern-input"
+                                                    placeholder="Ingrese el saldo pendiente"
+                                                    value="{{ old('saldopendiente', $ordencompra->saldopendiente) }}"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                {{-- ========================= --}}
-                                {{-- Campos ocultos --}}
-                                {{-- ========================= --}}
                                 <input
                                     type="hidden"
                                     name="estado"
-                                    value="1"
+                                    value="{{ old('estado', $ordencompra->estado) }}"
                                 >
-
-                                <input
-                                    type="hidden"
-                                    name="registradopor"
-                                    value="{{ Auth::user()->name }}"
-                                >
-
                             </div>
 
-                            {{-- ========================= --}}
-                            {{-- Footer --}}
-                            {{-- ========================= --}}
                             <div class="card-footer modern-footer">
-
                                 <div class="d-flex justify-content-between">
-
                                     <a
-                                        href="{{ route('proveedores.index') }}"
+                                        href="{{ route('ordencompras.index') }}"
                                         class="btn btn-outline-secondary btn-modern"
                                     >
-
                                         <i class="fas fa-times mr-1"></i>
                                         Cancelar
-
                                     </a>
-
                                     <button
                                         type="submit"
                                         class="btn btn-success btn-modern shadow-sm"
                                     >
-
                                         <i class="fas fa-save mr-1"></i>
-                                        Guardar
-
+                                        Actualizar
                                     </button>
-
                                 </div>
-
                             </div>
-
                         </form>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </section>
-
 </div>
 
 @endsection
