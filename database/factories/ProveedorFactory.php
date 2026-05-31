@@ -12,11 +12,11 @@ class ProveedorFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre' => $this->faker->name(),
-            'documento' => $this->faker->numerify('##########'),
-            'direccion' => $this->faker->address(),
-            'telefono' => $this->faker->phoneNumber(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'nombre' => fake()->name(),
+            'documento' => fake()->numerify('##########'),
+            'direccion' => fake()->address(),
+            'telefono' => fake()->phoneNumber(),
+            'email' => fake()->unique()->safeEmail(),
             'estado' => 1,
             'registradopor' => 'Seeder',
         ];
