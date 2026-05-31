@@ -56,6 +56,26 @@ Route::get('/migrar', function () {
 
 });
 
+
+Route::get('/seed', function () {
+
+    try {
+
+        Artisan::call('db:seed', [
+            '--force' => true
+        ]);
+
+        return nl2br(Artisan::output());
+
+    } catch (\Exception $e) {
+
+        return $e->getMessage();
+
+    }
+
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | CACHE CLEAR
