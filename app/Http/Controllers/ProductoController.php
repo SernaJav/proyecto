@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Producto;
-use Illuminate\Http\Request;
 use App\Http\Requests\ProductoRequest;
+use App\Models\Producto;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Exception;
+use Illuminate\Http\Request;
 
 class ProductoController extends Controller
 {
@@ -261,11 +264,16 @@ class ProductoController extends Controller
                     'Producto eliminado correctamente'
                 );
 
-        } catch (\Exception $e) {
-
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('productos.index')
+                ->withErrors('El registro tiene información relacionada');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
             return back()->with(
                 'error',
-                $e->getMessage()
+                'Ocurrió un error inesperado'
             );
         }
     }

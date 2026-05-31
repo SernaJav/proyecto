@@ -17,7 +17,8 @@ class ProductoFactory extends Factory
      */
     public function definition(): array
     {
-        $stockmaximo = $this->faker->numberBetween(10, 100);
+        $faker = $this->faker ?? fake();
+        $stockmaximo = $faker->numberBetween(10, 100);
 
         $productos = [
             ['nombre' => 'Jabón', 'precio' => 4500, 'imagen' => 'images/productos/jabon.png'],
@@ -32,14 +33,14 @@ class ProductoFactory extends Factory
             ['nombre' => 'Galletas', 'precio' => 8200, 'imagen' => 'images/productos/galletas.png'],
         ];
 
-        $producto = $this->faker->randomElement($productos);
+        $producto = $faker->randomElement($productos);
 
         return [
             'nombre' => $producto['nombre'],
             'preciocompra' => $producto['precio'],
-            'descripcion' => $this->faker->sentence(),
+            'descripcion' => $faker->sentence(),
             'stockmaximo' => $stockmaximo,
-            'stock' => $this->faker->numberBetween(0, $stockmaximo),
+            'stock' => $faker->numberBetween(0, $stockmaximo),
             'imagen' => $producto['imagen'],
             'estado' => '1',
             'registradopor' => 'Seeder',

@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DetallecompraRequest;
 use App\Models\DetalleCompra;
-use App\Models\Ordencompra;
+use App\Models\OrdenCompra;
 use App\Models\Producto;
-
-use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class DetalleCompraController extends Controller
 {
@@ -16,7 +18,7 @@ class DetalleCompraController extends Controller
     public function index()
     {
         // 🔥 cargamos orden y producto para poder mostrar datos relacionados
-        $detalles = Detallecompra::with(['ordenCompra', 'producto'])
+        $detalles = DetalleCompra::with(['ordenCompra', 'producto'])
             ->paginate(10);
 
         return view('detallecompras.index', compact('detalles'));
@@ -27,7 +29,7 @@ class DetalleCompraController extends Controller
     // =========================
     public function create()
     {
-        $ordenes = Ordencompra::where('estado', 1)->get();
+        $ordenes = OrdenCompra::where('estado', 1)->get();
         $productos = Producto::where('estado', 1)->get();
 
         return view('detallecompras.create', compact('ordenes', 'productos'));
@@ -38,7 +40,7 @@ class DetalleCompraController extends Controller
     // =========================
     public function show($id)
     {
-        $detalle = Detallecompra::with(['ordenCompra', 'producto'])
+        $detalle = DetalleCompra::with(['ordenCompra', 'producto'])
             ->findOrFail($id);
 
         return view('detallecompras.show', compact('detalle'));
@@ -47,40 +49,34 @@ class DetalleCompraController extends Controller
     // =========================
     // STORE
     // =========================
-    public function store(Request $request)
+    public function store(DetallecompraRequest $request)
     {
-        $request->validate([
-            'ordencompra_id' => 'required|exists:ordencompras,id',
-            'producto_id' => 'required|exists:productos,id',
-            'cantidad' => 'required|integer|min:1',
-            'subtotal' => 'required|numeric|min:0'
-        ]);
+        try {
+            $data = $request->validated();
 
-        $producto = Producto::findOrFail($request->producto_id);
+            $producto = Producto::findOrFail($data['producto_id']);
+            $producto->stockmaximo += $data['cantidad'];
+            $producto->save();
 
-        // 💡 aumenta stock
-        $producto->stockmaximo += $request->cantidad;
-        $producto->save();
+            $detalle = DetalleCompra::create([
+                'ordencompra_id' => $data['ordencompra_id'],
+                'producto_id' => $data['producto_id'],
+                'cantidad' => $data['cantidad'],
+                'subtotal' => $data['subtotal'],
+                'registradopor' => auth()->user()->name
+            ]);
 
-        // 💡 crear detalle
-        $detalle = Detallecompra::create([
-            'ordencompra_id' => $request->ordencompra_id,
-            'producto_id' => $request->producto_id,
-            'cantidad' => $request->cantidad,
-            'subtotal' => $request->subtotal,
-            'registradopor' => auth()->user()->name
-        ]);
+            $orden = OrdenCompra::findOrFail($data['ordencompra_id']);
+            $orden->total += $data['subtotal'];
+            $orden->saldopendiente = $orden->total;
+            $orden->save();
 
-        // 💡 actualizar orden
-        $orden = Ordencompra::findOrFail($request->ordencompra_id);
-        $orden->total += $request->subtotal;
-        $orden->saldopendiente = $orden->total;
-        $orden->save();
-
-
-
-        return redirect()->route('detallecompras.index')
-            ->with('success', 'Compra registrada correctamente');
+            return redirect()->route('detallecompras.index')
+                ->with('success', 'Compra registrada correctamente');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->withErrors('Ocurrió un error al registrar la compra');
+        }
     }
 
     // =========================
@@ -88,8 +84,8 @@ class DetalleCompraController extends Controller
     // =========================
     public function edit($id)
     {
-        $detalle = Detallecompra::findOrFail($id);
-        $ordenes = Ordencompra::where('estado', 1)->get();
+        $detalle = DetalleCompra::findOrFail($id);
+        $ordenes = OrdenCompra::where('estado', 1)->get();
         $productos = Producto::where('estado', 1)->get();
 
         return view('detallecompras.edit', compact('detalle', 'ordenes', 'productos'));
@@ -98,39 +94,31 @@ class DetalleCompraController extends Controller
     // =========================
     // UPDATE
     // =========================
-    public function update(Request $request, $id)
+    public function update(DetallecompraRequest $request, $id)
     {
-        $detalle = Detallecompra::findOrFail($id);
+        try {
+            $detalle = DetalleCompra::findOrFail($id);
+            $data = $request->validated();
 
-        $request->validate([
-            'ordencompra_id' => 'required|exists:ordencompras,id',
-            'producto_id' => 'required|exists:productos,id',
-            'cantidad' => 'required|integer|min:1',
-            'subtotal' => 'required|numeric|min:0'
-        ]);
+            $producto = Producto::findOrFail($data['producto_id']);
+            $producto->stockmaximo -= $detalle->cantidad;
+            $producto->stockmaximo += $data['cantidad'];
+            $producto->save();
 
-        $producto = Producto::findOrFail($request->producto_id);
+            $detalle->update([
+                'ordencompra_id' => $data['ordencompra_id'],
+                'producto_id' => $data['producto_id'],
+                'cantidad' => $data['cantidad'],
+                'subtotal' => $data['subtotal'],
+                'registradopor' => auth()->user()->name
+            ]);
 
-        // revertir stock anterior
-        $producto->stockmaximo -= $detalle->cantidad;
-
-        // aplicar nuevo stock
-        $producto->stockmaximo += $request->cantidad;
-
-        $producto->save();
-
-        $detalle->update([
-            'ordencompra_id' => $request->ordencompra_id,
-            'producto_id' => $request->producto_id,
-            'cantidad' => $request->cantidad,
-            'subtotal' => $request->subtotal,
-            'registradopor' => auth()->user()->name
-        ]);
-
-
-
-        return redirect()->route('detallecompras.index')
-            ->with('success', 'Actualizado correctamente');
+            return redirect()->route('detallecompras.index')
+                ->with('success', 'Actualizado correctamente');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->withErrors('Ocurrió un error al actualizar el detalle');
+        }
     }
 
     // =========================
@@ -138,18 +126,25 @@ class DetalleCompraController extends Controller
     // =========================
     public function destroy($id)
     {
-        $detalle = Detallecompra::findOrFail($id);
+        try {
+            $detalle = DetalleCompra::findOrFail($id);
+            $producto = Producto::findOrFail($detalle->producto_id);
 
-        $producto = Producto::findOrFail($detalle->producto_id);
+            $producto->stockmaximo -= $detalle->cantidad;
+            $producto->save();
 
-        $producto->stockmaximo -= $detalle->cantidad;
-        $producto->save();
+            $detalle->delete();
 
-
-
-        $detalle->delete();
-
-        return redirect()->route('detallecompras.index')
-            ->with('success', 'Eliminado correctamente');
+            return redirect()->route('detallecompras.index')
+                ->with('success', 'Eliminado correctamente');
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            return redirect()->route('detallecompras.index')
+                ->withErrors('El registro tiene información relacionada');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->route('detallecompras.index')
+                ->withErrors('Ocurrió un error inesperado');
+        }
     }
 }

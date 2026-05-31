@@ -40,7 +40,7 @@ class MetodopagoRequest extends FormRequest
             // =========================
             // estado
             // =========================
-            'estado' => 'required|in:activo,inactivo',
+            'estado' => 'required|in:1,0',
 
             // =========================
             // registrado por (opcional, se puede asignar automáticamente)
@@ -79,7 +79,7 @@ class MetodopagoRequest extends FormRequest
                 'El estado es obligatorio.',
 
             'estado.in' =>
-                'El estado debe ser "activo" o "inactivo".',
+                'El estado debe ser 1 o 0.',
 
             'registradopor.integer' =>
                 'El campo registrado por debe ser un número entero.',

@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\MetodopagoRequest;
 use App\Models\MetodoPago;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Exception;
 use Illuminate\Http\Request;
 
 class MetodoPagoController extends Controller
@@ -37,29 +41,23 @@ class MetodoPagoController extends Controller
     // =========================
     // Guardar
     // =========================
-   public function store(Request $request)
-{
-    // =========================
-    // Validación básica
-    // =========================
-    $request->validate([
-        'nombre' => 'required'
-    ]);
+    public function store(MetodopagoRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            $data['estado'] = 1;
+            $data['registradopor'] = auth()->user()->name;
 
-    // =========================
-    // Guardado manual (NO usar all())
-    // =========================
-    MetodoPago::create([
-        'nombre' => $request->nombre,
-        'descripcion' => $request->descripcion,
-        'estado' => 1,
-        'registradopor' => auth()->user()->name
-    ]);
+            MetodoPago::create($data);
 
-    return redirect()
-        ->route('metodopagos.index')
-        ->with('success', 'Método de pago creado exitosamente.');
-}
+            return redirect()
+                ->route('metodopagos.index')
+                ->with('success', 'Método de pago creado exitosamente.');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->withErrors('Ocurrió un error inesperado al crear el método de pago');
+        }
+    }
 
     // =========================
     // Editar
@@ -74,14 +72,19 @@ class MetodoPagoController extends Controller
     // =========================
     // Actualizar
     // =========================
-    public function update(Request $request, $id)
+    public function update(MetodopagoRequest $request, $id)
     {
-        $metodoPago = MetodoPago::findOrFail($id);
-        $metodoPago->update($request->all());
+        try {
+            $metodoPago = MetodoPago::findOrFail($id);
+            $metodoPago->update($request->validated());
 
-        return redirect()
-            ->route('metodopagos.index')
-            ->with('success', 'Actualizado correctamente.');
+            return redirect()
+                ->route('metodopagos.index')
+                ->with('success', 'Actualizado correctamente.');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->withErrors('Ocurrió un error inesperado al actualizar el método de pago');
+        }
     }
 
     // =========================
@@ -91,16 +94,29 @@ class MetodoPagoController extends Controller
     {
         $metodoPago = MetodoPago::findOrFail($id);
 
-        if ($metodoPago->pagos()->count() > 0) {
-            return redirect()->back()
-                ->with('error', 'Tiene pagos asociados.');
+        try {
+            if ($metodoPago->pagos()->count() > 0) {
+                return redirect()
+                    ->route('metodopagos.index')
+                    ->withErrors('El registro tiene información relacionada');
+            }
+
+            $metodoPago->delete();
+
+            return redirect()
+                ->route('metodopagos.index')
+                ->with('success', 'El registro se eliminó exitosamente');
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('metodopagos.index')
+                ->withErrors('El registro tiene información relacionada');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('metodopagos.index')
+                ->withErrors('Ocurrió un error inesperado');
         }
-
-        $metodoPago->delete();
-
-        return redirect()
-            ->route('metodopagos.index')
-            ->with('success', 'Eliminado correctamente.');
     }
 
     // =========================

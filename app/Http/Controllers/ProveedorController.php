@@ -6,10 +6,10 @@ namespace App\Http\Controllers;
 // IMPORTAR MODELO
 // =========================
 use App\Models\Proveedor;
-
-// =========================
-// REQUEST
-// =========================
+use App\Http\Requests\ProveedorRequest;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Exception;
 use Illuminate\Http\Request;
 
 class ProveedorController extends Controller
@@ -51,41 +51,14 @@ class ProveedorController extends Controller
     // =========================
     // GUARDAR
     // =========================
-    public function store(Request $request)
+    public function store(ProveedorRequest $request)
     {
-        // =========================
-        // VALIDAR
-        // =========================
-        $request->validate([
+        $data = $request->validated();
 
-            'nombre' => 'required',
+        $data['estado'] = 1;
+        $data['registradopor'] = auth()->user()->name;
 
-            'documento' => 'required',
-
-            'email' => 'required|email'
-
-        ]);
-
-        // =========================
-        // CREAR
-        // =========================
-        Proveedor::create([
-
-            'nombre' => $request->nombre,
-
-            'documento' => $request->documento,
-
-            'direccion' => $request->direccion,
-
-            'telefono' => $request->telefono,
-
-            'email' => $request->email,
-
-            'estado' => 1,
-
-            'registradopor' => auth()->user()->name
-
-        ]);
+        Proveedor::create($data);
 
         return redirect()
             ->route('proveedores.index')
@@ -111,23 +84,12 @@ class ProveedorController extends Controller
     // =========================
     // ACTUALIZAR
     // =========================
-    public function update(Request $request, $id)
+    public function update(ProveedorRequest $request, $id)
     {
         $proveedor = Proveedor::findOrFail($id);
+        $data = $request->validated();
 
-        $proveedor->update([
-
-            'nombre' => $request->nombre,
-
-            'documento' => $request->documento,
-
-            'direccion' => $request->direccion,
-
-            'telefono' => $request->telefono,
-
-            'email' => $request->email
-
-        ]);
+        $proveedor->update($data);
 
         return redirect()
             ->route('proveedores.index')
@@ -142,35 +104,31 @@ class ProveedorController extends Controller
     // =========================
     public function destroy($id)
     {
-        // =========================
-        // BUSCAR
-        // =========================
         $proveedor = Proveedor::findOrFail($id);
 
-        // =========================
-        // VALIDAR ORDENES
-        // =========================
-        if ($proveedor->ordenesCompra()->count() > 0) {
+        try {
+            if ($proveedor->ordenesCompra()->count() > 0) {
+                return redirect()
+                    ->back()
+                    ->withErrors('El registro tiene información relacionada');
+            }
+
+            $proveedor->delete();
 
             return redirect()
-                ->back()
-                ->with(
-                    'error',
-                    'No se puede eliminar el proveedor porque tiene órdenes de compra asociadas.'
-                );
+                ->route('proveedores.index')
+                ->with('success', 'El registro se eliminó exitosamente');
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('proveedores.index')
+                ->withErrors('El registro tiene información relacionada');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('proveedores.index')
+                ->withErrors('Ocurrió un error inesperado');
         }
-
-        // =========================
-        // ELIMINAR
-        // =========================
-        $proveedor->delete();
-
-        return redirect()
-            ->route('proveedores.index')
-            ->with(
-                'success',
-                'Proveedor eliminado exitosamente.'
-            );
     }
 
     // =========================

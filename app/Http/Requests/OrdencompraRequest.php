@@ -55,7 +55,7 @@ class OrdencompraRequest extends FormRequest
             // =========================
             // estado
             // =========================
-            'estado' => 'required|in:pendiente,aprobada,completada,cancelada',
+            'estado' => 'nullable|in:1,0',
 
             // =========================
             // registrado por (opcional, se puede asignar automáticamente)
@@ -111,11 +111,8 @@ class OrdencompraRequest extends FormRequest
             'saldopendiente.min' =>
                 'El saldo pendiente no puede ser negativo.',
 
-            'estado.required' =>
-                'El estado es obligatorio.',
-
             'estado.in' =>
-                'El estado debe ser: pendiente, aprobada, completada o cancelada.',
+                'El estado debe ser 1 o 0.',
 
             'registradopor.integer' =>
                 'El campo registrado por debe ser un número entero.',

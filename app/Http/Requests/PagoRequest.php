@@ -50,7 +50,7 @@ class PagoRequest extends FormRequest
             // =========================
             // estado
             // =========================
-            'estado' => 'required|in:pendiente,aprobado,rechazado,anulado',
+            'estado' => 'required|in:1,0',
 
             // =========================
             // registrado por (opcional, se puede asignar automáticamente)
@@ -107,7 +107,7 @@ class PagoRequest extends FormRequest
                 'El estado es obligatorio.',
 
             'estado.in' =>
-                'El estado debe ser: pendiente, aprobado, rechazado o anulado.',
+                'El estado debe ser 1 o 0.',
 
             'registradopor.integer' =>
                 'El campo registrado por debe ser un número entero.',

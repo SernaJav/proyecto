@@ -3,14 +3,14 @@
 namespace Database\Factories;
 
 use App\Models\DetalleCompra;
-use App\Models\Ordencompra;
-use App\Models\Producto;    
+use App\Models\OrdenCompra;
+use App\Models\Producto;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\DetalleCompra>
  */
-class DetallecompraFactory extends Factory
+class DetalleCompraFactory extends Factory
 {
     protected $model = DetalleCompra::class;
     /**
@@ -20,11 +20,13 @@ class DetallecompraFactory extends Factory
      */
     public function definition(): array
     {
-        $cantidad = $this->faker->numberBetween(1, 5);
-        $precio = $this->faker->randomFloat(2, 100, 500);
+        $faker = $this->faker ?? fake();
+        $cantidad = $faker->numberBetween(1, 5);
+        $precio = $faker->randomFloat(2, 100, 500);
+
         return [
-            'ordencompra_id' => $this->faker->randomElement(\App\Models\Ordencompra::pluck('id')->toArray()),
-            'producto_id' => $this->faker->randomElement(\App\Models\Producto::pluck('id')->toArray()),
+            'ordencompra_id' => $faker->randomElement(OrdenCompra::pluck('id')->toArray()),
+            'producto_id' => $faker->randomElement(Producto::pluck('id')->toArray()),
             'cantidad' => $cantidad,
             'subtotal' => $cantidad * $precio,
             'registradopor' => 'Seeder',

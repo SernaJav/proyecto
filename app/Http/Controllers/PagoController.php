@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PagoRequest;
 use App\Models\Pago;
 use App\Models\OrdenCompra;
 use App\Models\MetodoPago;
-use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class PagoController extends Controller
 {
@@ -45,28 +48,23 @@ class PagoController extends Controller
     // =========================
     // GUARDAR
     // =========================
-    public function store(Request $request)
+    public function store(PagoRequest $request)
     {
-        $request->validate([
-            'ordencompra_id' => 'required',
-            'metodopago_id' => 'required',
-            'monto' => 'required|numeric'
-        ]);
+        try {
+            $data = $request->validated();
+            $data['fechapago'] = $data['fechapago'] ?? now()->toDateString();
+            $data['registradopor'] = auth()->user()->name;
 
-        // =========================
-        // Guardar pago
-        // =========================
-        Pago::create([
-            'ordencompra_id' => $request->ordencompra_id,
-            'metodopago_id' => $request->metodopago_id,
-            'fechapago' => $request->fechapago ?? now()->toDateString(),
-            'monto' => $request->monto,
-            'registradopor' => auth()->user()->name
-        ]);
+            Pago::create($data);
 
-        return redirect()
-            ->route('pagos.index')
-            ->with('success', 'Pago registrado correctamente.');
+            return redirect()
+                ->route('pagos.index')
+                ->with('success', 'Pago registrado correctamente.');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()
+                ->withErrors('Ocurrió un error inesperado al registrar el pago');
+        }
     }
 
     // =========================
@@ -85,20 +83,22 @@ class PagoController extends Controller
     // =========================
     // ACTUALIZAR
     // =========================
-    public function update(Request $request, $id)
+    public function update(PagoRequest $request, $id)
     {
-        $pago = Pago::findOrFail($id);
+        try {
+            $pago = Pago::findOrFail($id);
+            $data = $request->validated();
 
-        $pago->update([
-            'ordencompra_id' => $request->ordencompra_id,
-            'metodopago_id' => $request->metodopago_id,
-            'fechapago' => $request->fechapago,
-            'monto' => $request->monto
-        ]);
+            $pago->update($data);
 
-        return redirect()
-            ->route('pagos.index')
-            ->with('success', 'Pago actualizado.');
+            return redirect()
+                ->route('pagos.index')
+                ->with('success', 'Pago actualizado.');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()
+                ->withErrors('Ocurrió un error inesperado al actualizar el pago');
+        }
     }
 
     // =========================
@@ -106,12 +106,24 @@ class PagoController extends Controller
     // =========================
     public function destroy($id)
     {
-        $pago = Pago::findOrFail($id);
-        $pago->delete();
+        try {
+            $pago = Pago::findOrFail($id);
+            $pago->delete();
 
-        return redirect()
-            ->route('pagos.index')
-            ->with('success', 'Pago eliminado.');
+            return redirect()
+                ->route('pagos.index')
+                ->with('success', 'Pago eliminado.');
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('pagos.index')
+                ->withErrors('El registro tiene información relacionada');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('pagos.index')
+                ->withErrors('Ocurrió un error inesperado');
+        }
     }
 
 }

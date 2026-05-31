@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Ordencompra;
+use App\Http\Requests\OrdencompraRequest;
+use App\Models\OrdenCompra;
 use App\Models\Proveedor;
-use App\Models\Metodopago;
+use App\Models\MetodoPago;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
+use Exception;
 use Illuminate\Http\Request;
 
-class OrdencompraController extends Controller
+class OrdenCompraController extends Controller
 {
     // =========================
     // LISTAR
     // =========================
     public function index()
     {
-$ordencompras = Ordencompra::all();
+        $ordencompras = OrdenCompra::with(['proveedor', 'pagos'])->get();
 
         return view(
             'ordencompras.index',
@@ -38,7 +42,7 @@ $ordencompras = Ordencompra::all();
         // =========================
         // traer métodos de pago activos
         // =========================
-        $metodospago = Metodopago::where(
+        $metodospago = MetodoPago::where(
             'estado',
             1
         )->get();
@@ -55,31 +59,19 @@ $ordencompras = Ordencompra::all();
     // =========================
     // GUARDAR
     // =========================
-    public function store(Request $request)
+    public function store(OrdencompraRequest $request)
     {
         try {
 
             // =========================
             // crear orden
             // =========================
-            Ordencompra::create([
+            $data = $request->validated();
+            $data['fecha'] = $data['fecha'] ?? now()->format('Y-m-d');
+            $data['estado'] = 1;
+            $data['registradopor'] = auth()->user()->name;
 
-                'fecha' => now(),
-
-                'proveedor_id' => $request->proveedor_id,
-
-                'total' => $request->total,
-
-                'tipopago' => $request->tipopago,
-
-                'saldopendiente' =>
-                    $request->saldopendiente ?? 0,
-
-                'estado' => 1,
-
-                'registradopor' =>
-                    auth()->user()->name
-            ]);
+            OrdenCompra::create($data);
 
             return redirect()
                 ->route('ordencompras.index')
@@ -88,12 +80,9 @@ $ordencompras = Ordencompra::all();
                     'Orden creada correctamente'
                 );
 
-        } catch (\Exception $e) {
-
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->withErrors('Ocurrió un error inesperado al crear la orden');
         }
     }
 
@@ -102,7 +91,7 @@ $ordencompras = Ordencompra::all();
     // =========================
     public function show($id)
     {
-        $ordencompra = Ordencompra::findOrFail($id);
+        $ordencompra = OrdenCompra::findOrFail($id);
 
         return view(
             'ordencompras.show',
@@ -115,14 +104,14 @@ $ordencompras = Ordencompra::all();
     // =========================
     public function edit($id)
     {
-        $ordencompra = Ordencompra::findOrFail($id);
+        $ordencompra = OrdenCompra::findOrFail($id);
 
         $proveedores = Proveedor::where(
             'estado',
             1
         )->get();
 
-        $metodospago = Metodopago::where(
+        $metodospago = MetodoPago::where(
             'estado',
             1
         )->get();
@@ -141,28 +130,16 @@ $ordencompras = Ordencompra::all();
     // ACTUALIZAR
     // =========================
     public function update(
-        Request $request,
+        OrdencompraRequest $request,
         $id
     )
     {
         try {
 
-            $ordencompra =
-                Ordencompra::findOrFail($id);
+            $ordencompra = OrdenCompra::findOrFail($id);
+            $data = $request->validated();
 
-            $ordencompra->update([
-
-                'proveedor_id' =>
-                    $request->proveedor_id,
-
-                'total' => $request->total,
-
-                'tipopago' =>
-                    $request->tipopago,
-
-                'saldopendiente' =>
-                    $request->saldopendiente
-            ]);
+            $ordencompra->update($data);
 
             return redirect()
                 ->route('ordencompras.index')
@@ -171,12 +148,9 @@ $ordencompras = Ordencompra::all();
                     'Orden actualizada correctamente'
                 );
 
-        } catch (\Exception $e) {
-
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return back()->withErrors('Ocurrió un error inesperado al actualizar la orden');
         }
     }
 
@@ -187,37 +161,40 @@ $ordencompras = Ordencompra::all();
     {
         try {
 
-            $ordencompra =
-                Ordencompra::findOrFail($id);
+            $ordencompra = OrdenCompra::findOrFail($id);
 
-            // =========================
-            // ELIMINAR DETALLES ASOCIADOS
-            // =========================
             $ordencompra->detallesCompras()->delete();
-
-            // =========================
-            // ELIMINAR PAGOS ASOCIADOS
-            // =========================
             $ordencompra->pagos()->delete();
-
-            // =========================
-            // ELIMINAR ORDEN
-            // =========================
             $ordencompra->delete();
 
             return redirect()
                 ->route('ordencompras.index')
-                ->with(
-                    'success',
-                    'Orden eliminada correctamente'
-                );
+                ->with('success', 'El registro se eliminó exitosamente');
 
-        } catch (\Exception $e) {
-
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
+        } catch (QueryException $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('ordencompras.index')
+                ->withErrors('El registro tiene información relacionada');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()
+                ->route('ordencompras.index')
+                ->withErrors('Ocurrió un error inesperado');
         }
+    }
+
+    public function cambioestado(Request $request)
+    {
+        $orden = OrdenCompra::find($request->id);
+
+        if (!$orden) {
+            return response()->json(['success' => false, 'message' => 'Orden no encontrada']);
+        }
+
+        $orden->estado = $request->estado;
+        $orden->save();
+
+        return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente']);
     }
 }
