@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -25,18 +24,15 @@ class ProfileController extends Controller
             $file = $request->file('photo');
             $filename = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-            if (!Storage::disk('public')->exists('users')) {
-                Storage::disk('public')->makeDirectory('users');
+            $destination = public_path('uploads/users');
+            if (!file_exists($destination)) {
+                mkdir($destination, 0755, true);
             }
 
-            $file->storeAs('public/users', $filename);
+            $file->move($destination, $filename);
 
-            if ($user->photo) {
-                if (Storage::disk('public')->exists('users/' . $user->photo)) {
-                    Storage::disk('public')->delete('users/' . $user->photo);
-                } elseif (file_exists(public_path('uploads/users/' . $user->photo))) {
-                    @unlink(public_path('uploads/users/' . $user->photo));
-                }
+            if ($user->photo && file_exists(public_path('uploads/users/' . $user->photo))) {
+                @unlink(public_path('uploads/users/' . $user->photo));
             }
 
             $user->photo = $filename;

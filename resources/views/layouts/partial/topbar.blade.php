@@ -38,18 +38,24 @@
                 ">
                     {{-- Avatar --}}
                     @php
-    $photo = Auth::user()->photo;
-@endphp
+                        $photo = Auth::user()->photo;
+                        $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . $photo));
+                        $storagePhoto = $photo && file_exists(public_path('storage/users/' . $photo));
+                    @endphp
 
-@if ($photo && file_exists(public_path('uploads/users/' . $photo)))
-    <img
-        src="{{ asset('uploads/users/' . $photo) }}"
-        style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-@else
-    <img
-        src="{{ asset('backend/dist/img/avatar.png') }}"
-        style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-@endif
+                    @if ($legacyPhoto)
+                        <img
+                            src="{{ asset('uploads/users/' . $photo) }}"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    @elseif ($storagePhoto)
+                        <img
+                            src="{{ asset('storage/users/' . $photo) }}"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    @else
+                        <img
+                            src="{{ asset('backend/dist/img/avatar.png') }}"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    @endif
                     {{-- Nombre y rol --}}
                     <div style="line-height: 1.3;">
                         <div style="font-size: 13px; font-weight: 600; color: #2d3748;">

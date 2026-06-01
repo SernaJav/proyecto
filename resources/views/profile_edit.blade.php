@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-@php use Illuminate\Support\Facades\Storage; @endphp
 <div class="container" style="max-width:720px;margin:20px auto;">
     <div class="card">
         <div class="card-header">Editar perfil</div>

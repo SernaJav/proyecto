@@ -86,10 +86,10 @@ class ProductoController extends Controller
                 );
 
                 // =========================
-                // guardar ruta
+                // guardar ruta pública
                 // =========================
                 $rutaImagen =
-                    'storage/productos/' . $nombre;
+                    'uploads/productos/' . $nombre;
             }
 
             // =========================
