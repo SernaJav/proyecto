@@ -31,8 +31,12 @@ class ProfileController extends Controller
 
             $file->storeAs('public/users', $filename);
 
-            if ($user->photo && Storage::disk('public')->exists('users/' . $user->photo)) {
-                Storage::disk('public')->delete('users/' . $user->photo);
+            if ($user->photo) {
+                if (Storage::disk('public')->exists('users/' . $user->photo)) {
+                    Storage::disk('public')->delete('users/' . $user->photo);
+                } elseif (file_exists(public_path('uploads/users/' . $user->photo))) {
+                    @unlink(public_path('uploads/users/' . $user->photo));
+                }
             }
 
             $user->photo = $filename;

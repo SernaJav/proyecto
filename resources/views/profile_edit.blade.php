@@ -16,9 +16,16 @@
                 <div class="form-group mb-3">
                     <label>Foto actual</label>
                     <div>
-                        @php $photo = Auth::user()->photo; @endphp
-                        @if ($photo && Storage::disk('public')->exists('users/' . $photo))
+                        @php
+                            $photo = Auth::user()->photo;
+                            $storagePhoto = $photo && Storage::disk('public')->exists('users/' . $photo);
+                            $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . $photo));
+                        @endphp
+
+                        @if ($storagePhoto)
                             <img src="{{ asset('storage/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+                        @elseif ($legacyPhoto)
+                            <img src="{{ asset('uploads/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @else
                             <img src="{{ asset('backend/dist/img/avatar.png') }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @endif
