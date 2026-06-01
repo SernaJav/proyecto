@@ -28,15 +28,16 @@
 
         {{-- Chip de usuario --}}
         <li class="nav-item">
-            <div style="
-                display: flex; align-items: center; gap: 10px;
-                background: #f7fafc;
-                border: 0.5px solid #e2e8f0;
-                border-radius: 30px;
-                padding: 5px 14px 5px 6px;
-            ">
-                {{-- Avatar --}}
-                @php
+            <a href="{{ route('profile.edit') }}" style="text-decoration:none;color:inherit;">
+                <div style="
+                    display: flex; align-items: center; gap: 10px;
+                    background: #f7fafc;
+                    border: 0.5px solid #e2e8f0;
+                    border-radius: 30px;
+                    padding: 5px 14px 5px 6px;
+                ">
+                    {{-- Avatar --}}
+                    @php
     $photo = Auth::user()->photo;
 @endphp
 
@@ -49,16 +50,17 @@
         src="{{ asset('backend/dist/img/avatar.png') }}"
         style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
 @endif
-                {{-- Nombre y rol --}}
-                <div style="line-height: 1.3;">
-                    <div style="font-size: 13px; font-weight: 600; color: #2d3748;">
-                        {{ Auth::user()->name }}
-                    </div>
-                    <div style="font-size: 10px; color: #a0aec0;">
-                        {{ Auth::user()->email }}
+                    {{-- Nombre y rol --}}
+                    <div style="line-height: 1.3;">
+                        <div style="font-size: 13px; font-weight: 600; color: #2d3748;">
+                            {{ Auth::user()->name }}
+                        </div>
+                        <div style="font-size: 10px; color: #a0aec0;">
+                            {{ Auth::user()->email }}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </li>
 
         {{-- Separador vertical --}}
