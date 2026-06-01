@@ -155,17 +155,19 @@
                                             <td>
 
                                                 @if($producto->imagen)
-                                                    @if(Str::startsWith($producto->imagen, 'data:'))
-                                                        <img
-                                                            src="{{ $producto->imagen }}"
-                                                            alt="{{ $producto->nombre }}"
-                                                            style="width:55px;height:55px;object-fit:cover;border-radius:10px;border:2px solid #dee2e6;">
-                                                    @else
-                                                        <img
-                                                            src="{{ asset($producto->imagen) }}"
-                                                            alt="{{ $producto->nombre }}"
-                                                            style="width:55px;height:55px;object-fit:cover;border-radius:10px;border:2px solid #dee2e6;">
-                                                    @endif
+                                                    @php
+                                                        if (strpos($producto->imagen, 'data:') === 0) {
+                                                            $imageSrc = $producto->imagen;
+                                                        } elseif (strpos($producto->imagen, 'storage/') === 0) {
+                                                            $imageSrc = url('storage-file/' . substr($producto->imagen, strlen('storage/')));
+                                                        } else {
+                                                            $imageSrc = asset($producto->imagen);
+                                                        }
+                                                    @endphp
+                                                    <img
+                                                        src="{{ $imageSrc }}"
+                                                        alt="{{ $producto->nombre }}"
+                                                        style="width:55px;height:55px;object-fit:cover;border-radius:10px;border:2px solid #dee2e6;">
                                                 @else
 
                                                     <div

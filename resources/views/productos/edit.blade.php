@@ -128,12 +128,26 @@
                                                 Imagen
                                             </label>
                                             <div class="image-upload-container">
+                                                @php
+                                                    $imagePreviewSrc = null;
+
+                                                    if ($producto->imagen) {
+                                                        if (strpos($producto->imagen, 'data:') === 0) {
+                                                            $imagePreviewSrc = $producto->imagen;
+                                                        } elseif (strpos($producto->imagen, 'storage/') === 0) {
+                                                            $imagePreviewSrc = url('storage-file/' . substr($producto->imagen, strlen('storage/')));
+                                                        } else {
+                                                            $imagePreviewSrc = asset($producto->imagen);
+                                                        }
+                                                    }
+                                                @endphp
+
                                                 <div class="image-preview-wrapper" id="imagePreviewWrapper">
-                                                    @if($producto->imagen)
+                                                    @if($imagePreviewSrc)
                                                         <img
                                                             id="imagePreview"
                                                             class="image-preview img-fluid"
-                                                            src="{{ asset($producto->imagen) }}"
+                                                            src="{{ $imagePreviewSrc }}"
                                                             alt="Vista previa"
                                                             style="max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 12px;"
                                                         >

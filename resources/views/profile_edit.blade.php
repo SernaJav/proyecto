@@ -17,14 +17,28 @@
                     <div>
                         @php
                             $photo = Auth::user()->photo;
-                            $storagePhoto = $photo && Storage::disk('public')->exists('users/' . $photo);
-                            $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . $photo));
+                            $isDataUrl = is_string($photo) && strpos($photo, 'data:') === 0;
+                            $storageKey = null;
+
+                            if (! $isDataUrl && $photo) {
+                                if (strpos($photo, 'storage/') === 0) {
+                                    $storageKey = substr($photo, strlen('storage/'));
+                                } elseif (strpos($photo, 'users/') === 0) {
+                                    $storageKey = $photo;
+                                } else {
+                                    $storageKey = 'users/' . $photo;
+                                }
+                            }
+
+                            $storagePhoto = $storageKey && Storage::disk('public')->exists($storageKey);
+                            $storageUrl = $storagePhoto ? url('storage-file/' . $storageKey) : null;
+                            $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . basename($photo)));
                         @endphp
 
-                        @if (Str::startsWith($photo, 'data:'))
+                        @if ($isDataUrl)
                             <img src="{{ $photo }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @elseif ($storagePhoto)
-                            <img src="{{ asset('storage/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+                            <img src="{{ $storageUrl }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @elseif ($legacyPhoto)
                             <img src="{{ asset('uploads/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @else

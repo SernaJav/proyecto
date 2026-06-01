@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Storage;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProveedorController;
@@ -31,6 +32,14 @@ Route::get('/', function () {
 Route::get('/test', function () {
     return '✅ Laravel funcionando en Render';
 });
+
+Route::get('storage-file/{path}', function ($path) {
+    if (! Storage::disk('public')->exists($path)) {
+        abort(404);
+    }
+
+    return Storage::disk('public')->response($path);
+})->where('path', '.*')->name('storage.file');
 
 /*
 |--------------------------------------------------------------------------

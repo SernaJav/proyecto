@@ -40,13 +40,18 @@
                         <div class="col-md-4 text-center mb-4 mb-md-0">
 
                             @if($producto->imagen)
+                                @php
+                                    if (strpos($producto->imagen, 'data:') === 0) {
+                                        $imageSrc = $producto->imagen;
+                                    } elseif (strpos($producto->imagen, 'storage/') === 0) {
+                                        $imageSrc = url('storage-file/' . substr($producto->imagen, strlen('storage/')));
+                                    } else {
+                                        $imageSrc = asset($producto->imagen);
+                                    }
+                                @endphp
 
                                 <img
-                                    @if(Str::startsWith($producto->imagen, 'data:'))
-                                        src="{{ $producto->imagen }}"
-                                    @else
-                                        src="{{ asset($producto->imagen) }}"
-                                    @endif
+                                    src="{{ $imageSrc }}"
                                     class="img-fluid rounded shadow-sm"
                                     style="max-width: 100%; max-height: 360px; object-fit: contain;"
                                 >

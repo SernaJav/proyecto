@@ -7,6 +7,7 @@ use App\Models\Producto;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -49,51 +50,30 @@ class ProductoController extends Controller
     public function store(ProductoRequest $request)
     {
         try {
+            $rutaImagen = null;
 
-                    try {
-                        $file->move($directorio, $nombre);
-                        $rutaImagen = 'storage/productos/' . $nombre;
-                    } catch (\Exception $e) {
-                        // fallback: guardar como data-URL en BD
-                        $contents = file_get_contents($file->getPathname());
-                        $base64 = base64_encode($contents);
-                        $mime = $file->getClientMimeType();
-                        $rutaImagen = "data:{$mime};base64,{$base64}";
-                    }
-
-                // =========================
-                // obtener archivo
-                // =========================
+            // =========================
+            // manejar imagen si fue subida
+            // =========================
+            if ($request->hasFile('imagen')) {
                 $file = $request->file('imagen');
 
-                // =========================
-                // crear nombre único
-                // =========================
-                $nombre = time() . '.' .
-                    $file->getClientOriginalExtension();
+                // nombre único
+                $nombre = time() . '.' . $file->getClientOriginalExtension();
 
-                // =========================
-                // crear directorio si no existe
-                // =========================
-                $directorio = storage_path('app/public/productos');
+                try {
+                    if (! Storage::disk('public')->exists('productos')) {
+                        Storage::disk('public')->makeDirectory('productos');
+                    }
 
-                if (! File::exists($directorio)) {
-                    File::makeDirectory($directorio, 0755, true);
+                    Storage::disk('public')->putFileAs('productos', $file, $nombre);
+                    $rutaImagen = 'storage/productos/' . $nombre;
+                } catch (\Exception $e) {
+                    $contents = file_get_contents($file->getPathname());
+                    $base64 = base64_encode($contents);
+                    $mime = $file->getClientMimeType();
+                    $rutaImagen = "data:{$mime};base64,{$base64}";
                 }
-
-                // =========================
-                // mover imagen
-                // =========================
-                $file->move(
-                    $directorio,
-                    $nombre
-                );
-
-                // =========================
-                // guardar ruta pública (servible vía storage symlink)
-                // =========================
-                $rutaImagen =
-                    'storage/productos/' . $nombre;
             }
 
             // =========================
@@ -208,19 +188,19 @@ class ProductoController extends Controller
                 $nombre = time() . '.' .
                     $file->getClientOriginalExtension();
 
-                $directorio = storage_path('app/public/productos');
+                try {
+                    if (! Storage::disk('public')->exists('productos')) {
+                        Storage::disk('public')->makeDirectory('productos');
+                    }
 
-                if (! File::exists($directorio)) {
-                    File::makeDirectory($directorio, 0755, true);
+                    Storage::disk('public')->putFileAs('productos', $file, $nombre);
+                    $rutaImagen = 'storage/productos/' . $nombre;
+                } catch (\Exception $e) {
+                    $contents = file_get_contents($file->getPathname());
+                    $base64 = base64_encode($contents);
+                    $mime = $file->getClientMimeType();
+                    $rutaImagen = "data:{$mime};base64,{$base64}";
                 }
-
-                $file->move(
-                    $directorio,
-                    $nombre
-                );
-
-                $rutaImagen =
-                    'storage/productos/' . $nombre;
             }
 
             // =========================

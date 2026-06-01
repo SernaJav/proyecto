@@ -34,15 +34,21 @@ class ProfileController extends Controller
                 Storage::disk('public')->putFileAs('users', $file, $filename);
 
                 // eliminar foto antigua en storage o en uploads legacy
-                if ($user->photo) {
-                    if (Storage::disk('public')->exists('users/' . $user->photo)) {
-                        Storage::disk('public')->delete('users/' . $user->photo);
-                    } elseif (file_exists(public_path('uploads/users/' . $user->photo))) {
-                        @unlink(public_path('uploads/users/' . $user->photo));
+                if ($user->photo && strpos($user->photo, 'data:') !== 0) {
+                    $oldPhotoKey = strpos($user->photo, 'storage/') === 0
+                        ? substr($user->photo, strlen('storage/'))
+                        : (strpos($user->photo, 'users/') === 0
+                            ? $user->photo
+                            : 'users/' . $user->photo);
+
+                    if (Storage::disk('public')->exists($oldPhotoKey)) {
+                        Storage::disk('public')->delete($oldPhotoKey);
+                    } elseif (file_exists(public_path('uploads/users/' . basename($oldPhotoKey)))) {
+                        @unlink(public_path('uploads/users/' . basename($oldPhotoKey)));
                     }
                 }
 
-                $user->photo = $filename;
+                $user->photo = 'storage/users/' . $filename;
                 $user->save();
             } catch (\Exception $e) {
                 // Si falla la escritura en disco (por permisos en el servidor),
