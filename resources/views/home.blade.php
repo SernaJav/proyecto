@@ -172,34 +172,6 @@
 
                 </div>
 
-                <!-- =========================
-                     Detalles compra
-                ========================== -->
-                <div class="col-lg-3 col-6">
-
-                    <div class="small-box bg-secondary">
-
-                        <div class="inner">
-                            <h3>{{ $totalDetalles }}</h3>
-                            <p>Detalles Compra</p>
-                        </div>
-
-                        <div class="icon">
-                            <i class="fas fa-list"></i>
-                        </div>
-
-                        <a
-                            href="{{ route('detallecompras.index') }}"
-                            class="small-box-footer"
-                        >
-                            Más Información
-                            <i class="fas fa-arrow-circle-right"></i>
-                        </a>
-
-                    </div>
-
-                </div>
-
             </div>
 
         </div>

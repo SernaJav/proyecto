@@ -14,14 +14,22 @@ class UpdateUserPhotoSeeder extends Seeder
     {
         $email = 'jamaseos77@gmail.com';
 
-        $user = User::where('email', $email)->first();
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => 'Javier',
+                'password' => bcrypt('12345678'),
+                'photo' => 'javier.jpeg',
+            ]
+        );
 
-        if ($user) {
+        if ($user->wasRecentlyCreated) {
+            $this->command->info("Created user {$email} with photo javier.jpeg");
+        } else {
             $user->photo = 'javier.jpeg';
             $user->save();
             $this->command->info("Updated photo for {$email}");
-        } else {
-            $this->command->info("User {$email} not found.");
         }
     }
 }
+

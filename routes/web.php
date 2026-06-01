@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\MetodoPagoController;
 use App\Http\Controllers\PagoController;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -180,5 +181,9 @@ Route::middleware(['auth'])->group(function () {
         'cambioestadopago',
         [PagoController::class, 'cambioestado']
     )->name('cambioestadopago');
+
+    // PROFILE
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('profile', [ProfileController::class, 'update'])->name('profile.update');
 
 });
