@@ -86,10 +86,10 @@ class ProductoController extends Controller
                 );
 
                 // =========================
-                // guardar ruta pública
+                // guardar ruta pública (servible vía storage symlink)
                 // =========================
                 $rutaImagen =
-                    'uploads/productos/' . $nombre;
+                    'storage/productos/' . $nombre;
             }
 
             // =========================
