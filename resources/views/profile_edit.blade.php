@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+@php use Illuminate\Support\Facades\Storage; @endphp
 <div class="container" style="max-width:720px;margin:20px auto;">
     <div class="card">
         <div class="card-header">Editar perfil</div>
@@ -16,8 +17,8 @@
                     <label>Foto actual</label>
                     <div>
                         @php $photo = Auth::user()->photo; @endphp
-                        @if ($photo && file_exists(public_path('uploads/users/' . $photo)))
-                            <img src="{{ asset('uploads/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+                        @if ($photo && Storage::disk('public')->exists('users/' . $photo))
+                            <img src="{{ asset('storage/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @else
                             <img src="{{ asset('backend/dist/img/avatar.png') }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                         @endif

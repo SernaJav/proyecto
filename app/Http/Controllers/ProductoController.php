@@ -19,12 +19,9 @@ class ProductoController extends Controller
     {
         // =========================
         // traer todos los productos
-        // ordenados por estado (activos primero)
-        // y luego por ID descendente
+        // ordenados por ID ascendente, sin importar su estado
         // =========================
-        $productos = Producto::orderBy('estado', 'desc')
-            ->orderBy('id', 'desc')
-            ->get();
+        $productos = Producto::orderBy('id', 'asc')->get();
 
         // =========================
         // enviar vista
