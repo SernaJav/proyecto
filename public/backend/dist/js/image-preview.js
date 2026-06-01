@@ -120,7 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         reader.onload = function(event) {
             imagePreview.src = event.target.result;
+            imagePreview.alt = file.name;
             imagePreview.style.display = 'block';
+            imagePreview.style.width = '100%';
+            imagePreview.style.height = '100%';
             imagePreviewPlaceholder.style.display = 'none';
             
             // Actualizar label del input file
