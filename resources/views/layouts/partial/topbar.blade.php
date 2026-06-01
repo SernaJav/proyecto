@@ -39,17 +39,17 @@
                     {{-- Avatar --}}
                     @php
                         $photo = Auth::user()->photo;
-                        $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . $photo));
                         $storagePhoto = $photo && file_exists(public_path('storage/users/' . $photo));
+                        $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . $photo));
                     @endphp
 
-                    @if ($legacyPhoto)
-                        <img
-                            src="{{ asset('uploads/users/' . $photo) }}"
-                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                    @elseif ($storagePhoto)
+                    @if ($storagePhoto)
                         <img
                             src="{{ asset('storage/users/' . $photo) }}"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    @elseif ($legacyPhoto)
+                        <img
+                            src="{{ asset('uploads/users/' . $photo) }}"
                             style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
                     @else
                         <img
