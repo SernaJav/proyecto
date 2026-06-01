@@ -27,6 +27,9 @@ class ProductoController extends Controller
         // enviar vista
         // =========================
         return view(
+                    // =========================
+                    // intentar guardar en storage público; si falla, usar data-URL
+                    // =========================
             'productos.index',
             compact('productos')
         );
@@ -47,15 +50,16 @@ class ProductoController extends Controller
     {
         try {
 
-            // =========================
-            // imagen por defecto
-            // =========================
-            $rutaImagen = 'images/productos/default.png';
-
-            // =========================
-            // verificar imagen
-            // =========================
-            if ($request->hasFile('imagen')) {
+                    try {
+                        $file->move($directorio, $nombre);
+                        $rutaImagen = 'storage/productos/' . $nombre;
+                    } catch (\Exception $e) {
+                        // fallback: guardar como data-URL en BD
+                        $contents = file_get_contents($file->getPathname());
+                        $base64 = base64_encode($contents);
+                        $mime = $file->getClientMimeType();
+                        $rutaImagen = "data:{$mime};base64,{$base64}";
+                    }
 
                 // =========================
                 // obtener archivo

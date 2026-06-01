@@ -155,19 +155,17 @@
                                             <td>
 
                                                 @if($producto->imagen)
-
-                                                    <img
-                                                        src="{{ asset($producto->imagen) }}"
-                                                        alt="{{ $producto->nombre }}"
-                                                        style="
-                                                            width: 55px;
-                                                            height: 55px;
-                                                            object-fit: cover;
-                                                            border-radius: 10px;
-                                                            border: 2px solid #dee2e6;
-                                                        "
-                                                    >
-
+                                                    @if(Str::startsWith($producto->imagen, 'data:'))
+                                                        <img
+                                                            src="{{ $producto->imagen }}"
+                                                            alt="{{ $producto->nombre }}"
+                                                            style="width:55px;height:55px;object-fit:cover;border-radius:10px;border:2px solid #dee2e6;">
+                                                    @else
+                                                        <img
+                                                            src="{{ asset($producto->imagen) }}"
+                                                            alt="{{ $producto->nombre }}"
+                                                            style="width:55px;height:55px;object-fit:cover;border-radius:10px;border:2px solid #dee2e6;">
+                                                    @endif
                                                 @else
 
                                                     <div

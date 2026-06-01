@@ -43,7 +43,11 @@
                         $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . $photo));
                     @endphp
 
-                    @if ($storagePhoto)
+                    @if (Str::startsWith($photo, 'data:'))
+                        <img
+                            src="{{ $photo }}"
+                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    @elseif ($storagePhoto)
                         <img
                             src="{{ asset('storage/users/' . $photo) }}"
                             style="width:32px;height:32px;border-radius:50%;object-fit:cover;">

@@ -42,7 +42,11 @@
                             @if($producto->imagen)
 
                                 <img
-                                    src="{{ asset($producto->imagen) }}"
+                                    @if(Str::startsWith($producto->imagen, 'data:'))
+                                        src="{{ $producto->imagen }}"
+                                    @else
+                                        src="{{ asset($producto->imagen) }}"
+                                    @endif
                                     class="img-fluid rounded shadow-sm"
                                     style="max-width: 100%; max-height: 360px; object-fit: contain;"
                                 >
