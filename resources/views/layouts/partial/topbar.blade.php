@@ -46,7 +46,7 @@
         style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
 @else
     <img
-        src="{{ asset('backend/dist/img/icon.jpg') }}"
+        src="{{ asset('backend/dist/img/avatar.png') }}"
         style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
 @endif
                 {{-- Nombre y rol --}}

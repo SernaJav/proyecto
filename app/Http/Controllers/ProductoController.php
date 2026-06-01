@@ -19,9 +19,12 @@ class ProductoController extends Controller
     {
         // =========================
         // traer todos los productos
-        // datatable hará la paginación
+        // ordenados por estado (activos primero)
+        // y luego por ID descendente
         // =========================
-        $productos = Producto::all();
+        $productos = Producto::orderBy('estado', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
 
         // =========================
         // enviar vista
@@ -71,7 +74,7 @@ class ProductoController extends Controller
                 // =========================
                 // crear directorio si no existe
                 // =========================
-                $directorio = public_path('images/productos');
+                $directorio = storage_path('app/public/productos');
 
                 if (! File::exists($directorio)) {
                     File::makeDirectory($directorio, 0755, true);
@@ -89,7 +92,7 @@ class ProductoController extends Controller
                 // guardar ruta
                 // =========================
                 $rutaImagen =
-                    'images/productos/' . $nombre;
+                    'storage/productos/' . $nombre;
             }
 
             // =========================
@@ -204,7 +207,7 @@ class ProductoController extends Controller
                 $nombre = time() . '.' .
                     $file->getClientOriginalExtension();
 
-                $directorio = public_path('images/productos');
+                $directorio = storage_path('app/public/productos');
 
                 if (! File::exists($directorio)) {
                     File::makeDirectory($directorio, 0755, true);
@@ -216,7 +219,7 @@ class ProductoController extends Controller
                 );
 
                 $rutaImagen =
-                    'images/productos/' . $nombre;
+                    'storage/productos/' . $nombre;
             }
 
             // =========================

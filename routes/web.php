@@ -8,7 +8,6 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\OrdenCompraController;
-use App\Http\Controllers\DetalleCompraController;
 use App\Http\Controllers\MetodoPagoController;
 use App\Http\Controllers\PagoController;
 
@@ -155,14 +154,6 @@ Route::middleware(['auth'])->group(function () {
         'cambioestadoordencompra',
         [OrdenCompraController::class, 'cambioestado']
     )->name('cambioestadoordencompra');
-
-    /*
-    |--------------------------------------------------------------------------
-    | DETALLE COMPRAS
-    |--------------------------------------------------------------------------
-    */
-
-    Route::resource('detallecompras', DetalleCompraController::class);
 
     /*
     |--------------------------------------------------------------------------

@@ -153,22 +153,6 @@
 
                         </li>
 
-
-                        {{-- =========================================================
-                             DETALLE COMPRAS
-                        ========================================================= --}}
-                        <li class="nav-item">
-
-                            <a href="{{ route('detallecompras.index') }}" class="nav-link">
-
-                                <i class="nav-icon fas fa-list"></i>
-
-                                <p>Detalle Compras</p>
-
-                            </a>
-
-                        </li>
-
                     </ul>
 
                 </li>
