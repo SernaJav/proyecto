@@ -27,8 +27,9 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Administrador',
                 'password' => bcrypt('12345678')
-            ]
         );
+
+        $this->call(UpdateUserPhotoSeeder::class);
 
         /*
         |--------------------------------------------------------------------------
