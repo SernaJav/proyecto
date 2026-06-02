@@ -80,6 +80,13 @@ class User extends Authenticatable
             return asset('uploads/users/' . $basename);
         }
 
+        // Soporte para foto de Javier guardada de forma persistente en public/images/
+        if (strpos($photo, 'javier') === 0 || strpos($photo, 'images/javier') === 0) {
+            if (file_exists(public_path('images/' . $basename))) {
+                return asset('images/' . $basename);
+            }
+        }
+
         // Si la ruta no tiene el prefijo "users/", pero es un nombre de archivo
         if (strpos($photo, '/') === false) {
             if (\Illuminate\Support\Facades\Storage::disk('public')->exists('users/' . $photo)) {
