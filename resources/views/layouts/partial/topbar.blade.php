@@ -6,7 +6,7 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 ">
 
-    {{-- Botón menú hamburguesa --}}
+    {{-- Botón menú --}}
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button" style="
@@ -26,7 +26,7 @@
         </li>
     </ul>
 
-    {{-- Lado derecho --}}
+    {{-- Derecha --}}
     <ul class="navbar-nav ml-auto d-flex align-items-center" style="gap: 8px;">
 
         {{-- Usuario --}}
@@ -42,9 +42,14 @@
                     padding: 5px 14px 5px 6px;
                 ">
 
-                    {{-- Avatar limpio --}}
+                    {{-- AVATAR ROBUSTO --}}
                     @php
                         $photo = Auth::user()->photo;
+
+                        // limpiar posibles rutas malas
+                        if ($photo) {
+                            $photo = str_replace('storage/', '', $photo);
+                        }
                     @endphp
 
                     @if ($photo)
@@ -55,7 +60,7 @@
                              style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
                     @endif
 
-                    {{-- Datos usuario --}}
+                    {{-- Datos --}}
                     <div style="line-height: 1.3;">
                         <div style="font-size: 13px; font-weight: 600; color: #2d3748;">
                             {{ Auth::user()->name }}
@@ -79,8 +84,6 @@
             <a class="nav-link"
                href="{{ route('logout') }}"
                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-               title="Cerrar Sesión"
-               role="button"
                style="
                    width: 38px;
                    height: 38px;
@@ -90,10 +93,7 @@
                    border-radius: 8px;
                    border: 0.5px solid #fed7d7;
                    background: #fff5f5;
-                   transition: background 0.15s;
-               "
-               onmouseover="this.style.background='#fed7d7'"
-               onmouseout="this.style.background='#fff5f5'">
+               ">
                 <i class="fas fa-power-off" style="font-size: 15px; color: #c53030;"></i>
             </a>
 
