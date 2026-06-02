@@ -70,15 +70,22 @@
                                 {{-- ========================= --}}
                                 {{-- BOTÓN NUEVO --}}
                                 {{-- ========================= --}}
-                                <a
-                                    href="{{ route('metodopagos.create') }}"
-                                    class="btn btn-success btn-modern shadow-sm"
-                                >
-
-                                    <i class="fas fa-plus mr-1"></i>
-                                    Nuevo Método
-
-                                </a>
+                                <div class="d-flex">
+                                    <a
+                                        href="{{ route('metodopagos.excel') }}"
+                                        class="btn btn-success btn-modern mr-2"
+                                    >
+                                        <i class="fas fa-file-excel mr-1"></i>
+                                        Excel
+                                    </a>
+                                    <a
+                                        href="{{ route('metodopagos.create') }}"
+                                        class="btn btn-success btn-modern shadow-sm"
+                                    >
+                                        <i class="fas fa-plus mr-1"></i>
+                                        Nuevo Método
+                                    </a>
+                                </div>
 
                             </div>
 
@@ -260,9 +267,18 @@
                                                             class="btn btn-info btn-action"
                                                             title="Ver método"
                                                         >
-
                                                             <i class="fas fa-eye"></i>
+                                                        </a>
 
+                                                        {{-- PDF --}}
+                                                        <a
+                                                            href="{{ route('metodopagos.pdf', $metodopago->id) }}"
+                                                            class="btn btn-secondary btn-action"
+                                                            target="_blank"
+                                                            title="Exportar PDF"
+                                                            style="background-color: #e056fd; border-color: #e056fd; color: #fff;"
+                                                        >
+                                                            <i class="fas fa-file-pdf"></i>
                                                         </a>
 
                                                         {{-- EDITAR --}}

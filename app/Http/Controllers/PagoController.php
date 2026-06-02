@@ -126,4 +126,52 @@ class PagoController extends Controller
         }
     }
 
+    // =========================
+    // EXPORTAR A EXCEL (CSV)
+    // =========================
+    public function exportExcel()
+    {
+        $pagos = Pago::with(['ordenCompra', 'metodoPago'])->get();
+        $filename = "pagos_" . date('Ymd_His') . ".csv";
+
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $columns = ['ID', 'Orden de Compra ID', 'Fecha de Pago', 'Monto', 'Método de Pago', 'Registrado Por'];
+
+        $callback = function() use($pagos, $columns) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, $columns, ';');
+
+            foreach ($pagos as $pago) {
+                fputcsv($file, [
+                    $pago->id,
+                    $pago->ordencompra_id,
+                    $pago->fechapago ? $pago->fechapago->format('d/m/Y H:i') : 'N/A',
+                    $pago->monto,
+                    $pago->metodoPago->nombre ?? 'N/A',
+                    $pago->registradopor
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // =========================
+    // EXPORTAR A PDF (PRINT VIEW)
+    // =========================
+    public function exportPdf($id)
+    {
+        $pago = Pago::with(['ordenCompra', 'metodoPago'])->findOrFail($id);
+        return view('pagos.pdf', compact('pago'));
+    }
 }

@@ -8,6 +8,7 @@ use App\Models\Proveedor;
 use App\Models\MetodoPago;
 use App\Models\Producto;
 use App\Models\DetalleCompra;
+use App\Models\Pago;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -79,15 +80,16 @@ class OrdenCompraController extends Controller
             // crear orden
             // =========================
             $data = $request->validated();
-            $data['fecha'] = $data['fecha'] ?? now()->format('Y-m-d');
+            $data['fecha'] = $data['fecha'] ?? now()->format('Y-m-d H:i:s');
             $data['estado'] = 1;
             $data['registradopor'] = auth()->user()->name;
 
-            // Lógica de saldo pendiente según el tipo de pago
+            // Lógica de saldo pendiente y abono según el tipo de pago
             if ($data['tipopago'] == 'contado') {
+                $data['abono'] = $data['total'];
                 $data['saldopendiente'] = 0;
             } else {
-                $data['saldopendiente'] = $data['total'];
+                $data['saldopendiente'] = $data['total'] - $data['abono'];
             }
 
             $orden = OrdenCompra::create($data);
@@ -112,13 +114,26 @@ class OrdenCompraController extends Controller
                 $producto->save();
             }
 
+            // =========================
+            // registrar pago si abono > 0
+            // =========================
+            if ($data['abono'] > 0) {
+                Pago::create([
+                    'ordencompra_id' => $orden->id,
+                    'fechapago' => $data['fecha'],
+                    'monto' => $data['abono'],
+                    'metodopago_id' => $data['metodopago_id'],
+                    'registradopor' => auth()->user()->name
+                ]);
+            }
+
             \DB::commit();
 
             return redirect()
                 ->route('ordencompras.index')
                 ->with(
-                   'success',
-                   'Orden creada correctamente'
+                    'success',
+                    'Orden creada correctamente'
                 );
 
         } catch (Exception $e) {
@@ -191,11 +206,12 @@ class OrdenCompraController extends Controller
             $ordencompra = OrdenCompra::findOrFail($id);
             $data = $request->validated();
 
-            // Lógica de saldo pendiente según el tipo de pago
+            // Lógica de saldo pendiente y abono según el tipo de pago
             if ($data['tipopago'] == 'contado') {
+                $data['abono'] = $data['total'];
                 $data['saldopendiente'] = 0;
             } else {
-                $data['saldopendiente'] = $data['total'];
+                $data['saldopendiente'] = $data['total'] - $data['abono'];
             }
 
             // ==========================================
@@ -242,6 +258,33 @@ class OrdenCompraController extends Controller
                 $newProd = Producto::findOrFail($data['producto_id']);
                 $newProd->stock -= $data['cantidad'];
                 $newProd->save();
+            }
+
+            // ==========================================
+            // Sincronizar o crear el registro en la tabla pagos
+            // ==========================================
+            $pago = $ordencompra->pagos()->first();
+            if ($data['abono'] > 0) {
+                if ($pago) {
+                    $pago->update([
+                        'fechapago' => $data['fecha'],
+                        'monto' => $data['abono'],
+                        'metodopago_id' => $data['metodopago_id'],
+                        'registradopor' => auth()->user()->name
+                    ]);
+                } else {
+                    Pago::create([
+                        'ordencompra_id' => $ordencompra->id,
+                        'fechapago' => $data['fecha'],
+                        'monto' => $data['abono'],
+                        'metodopago_id' => $data['metodopago_id'],
+                        'registradopor' => auth()->user()->name
+                    ]);
+                }
+            } else {
+                if ($pago) {
+                    $pago->delete();
+                }
             }
 
             \DB::commit();

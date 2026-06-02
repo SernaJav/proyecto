@@ -30,7 +30,7 @@ class OrdencompraRequest extends FormRequest
             // =========================
             // fecha
             // =========================
-            'fecha' => 'required|date|date_format:Y-m-d',
+            'fecha' => 'required|date',
 
             // =========================
             // proveedor (relación)
@@ -66,6 +66,16 @@ class OrdencompraRequest extends FormRequest
             // tipo de pago
             // =========================
             'tipopago' => 'required|in:contado,credito',
+
+            // =========================
+            // abono
+            // =========================
+            'abono' => 'required|numeric|min:0',
+
+            // =========================
+            // método de pago (relación)
+            // =========================
+            'metodopago_id' => 'required|integer|exists:metodopagos,id',
 
             // =========================
             // saldo pendiente

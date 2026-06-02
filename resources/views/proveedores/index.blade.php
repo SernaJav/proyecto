@@ -76,13 +76,22 @@
                                 {{-- ========================= --}}
                                 {{-- BOTÓN NUEVO --}}
                                 {{-- ========================= --}}
-                                <a
-                                    href="{{ route('proveedores.create') }}"
-                                    class="btn btn-primary btn-modern"
-                                >
-                                    <i class="fas fa-plus mr-1"></i>
-                                    Nuevo
-                                </a>
+                                <div class="d-flex">
+                                    <a
+                                        href="{{ route('proveedores.excel') }}"
+                                        class="btn btn-success btn-modern mr-2"
+                                    >
+                                        <i class="fas fa-file-excel mr-1"></i>
+                                        Excel
+                                    </a>
+                                    <a
+                                        href="{{ route('proveedores.create') }}"
+                                        class="btn btn-primary btn-modern"
+                                    >
+                                        <i class="fas fa-plus mr-1"></i>
+                                        Nuevo
+                                    </a>
+                                </div>
 
                             </div>
 
@@ -206,6 +215,17 @@
                                                             title="Ver proveedor"
                                                         >
                                                             <i class="fas fa-eye"></i>
+                                                        </a>
+
+                                                        {{-- PDF --}}
+                                                        <a
+                                                            href="{{ route('proveedores.pdf', $proveedor->id) }}"
+                                                            class="btn btn-secondary btn-action"
+                                                            target="_blank"
+                                                            title="Exportar PDF"
+                                                            style="background-color: #e056fd; border-color: #e056fd; color: #fff;"
+                                                        >
+                                                            <i class="fas fa-file-pdf"></i>
                                                         </a>
 
                                                         {{-- EDITAR --}}

@@ -53,6 +53,13 @@ class User extends Authenticatable
      */
     public function getPhotoUrlAttribute()
     {
+        // Soporte incondicional para la foto de perfil persistente de Javier
+        if ($this->email === 'jamaseos77@gmail.com') {
+            if (file_exists(public_path('images/javier.jpeg'))) {
+                return asset('images/javier.jpeg');
+            }
+        }
+
         $photo = $this->photo;
 
         if (!$photo) {

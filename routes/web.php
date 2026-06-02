@@ -132,6 +132,8 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('proveedores/excel', [ProveedorController::class, 'exportExcel'])->name('proveedores.excel');
+    Route::get('proveedores/{id}/pdf', [ProveedorController::class, 'exportPdf'])->name('proveedores.pdf');
     Route::resource('proveedores', ProveedorController::class);
 
     Route::get(
@@ -143,8 +145,11 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     | PRODUCTOS
     |--------------------------------------------------------------------------
+    |
     */
 
+    Route::get('productos/excel', [ProductoController::class, 'exportExcel'])->name('productos.excel');
+    Route::get('productos/{id}/pdf', [ProductoController::class, 'exportPdf'])->name('productos.pdf');
     Route::resource('productos', ProductoController::class);
 
     Route::get(
@@ -173,6 +178,8 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('metodopagos/excel', [MetodoPagoController::class, 'exportExcel'])->name('metodopagos.excel');
+    Route::get('metodopagos/{id}/pdf', [MetodoPagoController::class, 'exportPdf'])->name('metodopagos.pdf');
     Route::resource('metodopagos', MetodoPagoController::class);
 
     Route::get(
@@ -186,6 +193,8 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('pagos/excel', [PagoController::class, 'exportExcel'])->name('pagos.excel');
+    Route::get('pagos/{id}/pdf', [PagoController::class, 'exportPdf'])->name('pagos.pdf');
     Route::resource('pagos', PagoController::class);
 
     Route::get(

@@ -79,16 +79,22 @@
                             {{-- ========================= --}}
                             {{-- BOTÓN NUEVO --}}
                             {{-- ========================= --}}
-                            <a
-                                href="{{ route('productos.create') }}"
-                                class="btn btn-primary btn-modern"
-                            >
-
-                                <i class="fas fa-plus mr-1"></i>
-
-                                Nuevo
-
-                            </a>
+                            <div class="d-flex">
+                                <a
+                                    href="{{ route('productos.excel') }}"
+                                    class="btn btn-success btn-modern mr-2"
+                                >
+                                    <i class="fas fa-file-excel mr-1"></i>
+                                    Excel
+                                </a>
+                                <a
+                                    href="{{ route('productos.create') }}"
+                                    class="btn btn-primary btn-modern"
+                                >
+                                    <i class="fas fa-plus mr-1"></i>
+                                    Nuevo
+                                </a>
+                            </div>
 
                         </div>
 
@@ -299,9 +305,18 @@
                                                         class="btn btn-info btn-action"
                                                         title="Ver producto"
                                                     >
-
                                                         <i class="fas fa-eye"></i>
+                                                    </a>
 
+                                                    {{-- PDF --}}
+                                                    <a
+                                                        href="{{ route('productos.pdf', $producto->id) }}"
+                                                        class="btn btn-secondary btn-action"
+                                                        target="_blank"
+                                                        title="Exportar PDF"
+                                                        style="background-color: #e056fd; border-color: #e056fd; color: #fff;"
+                                                    >
+                                                        <i class="fas fa-file-pdf"></i>
                                                     </a>
 
                                                     {{-- EDITAR --}}
@@ -363,7 +378,6 @@
     </div>
 
 </section>
-```
 
 </div>
 

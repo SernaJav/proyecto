@@ -27,17 +27,22 @@
                 </div>
 
                 <div class="col-sm-6 text-right">
-
-                    <a
-                        href="{{ route('pagos.create') }}"
-                        class="btn btn-primary btn-modern"
-                    >
-
-                        <i class="fas fa-plus mr-1"></i>
-                        Nuevo Pago
-
-                    </a>
-
+                    <div class="d-flex justify-content-end">
+                        <a
+                            href="{{ route('pagos.excel') }}"
+                            class="btn btn-success btn-modern mr-2"
+                        >
+                            <i class="fas fa-file-excel mr-1"></i>
+                            Excel
+                        </a>
+                        <a
+                            href="{{ route('pagos.create') }}"
+                            class="btn btn-primary btn-modern"
+                        >
+                            <i class="fas fa-plus mr-1"></i>
+                            Nuevo Pago
+                        </a>
+                    </div>
                 </div>
 
             </div>
@@ -201,9 +206,18 @@
                                                             class="btn btn-info btn-action"
                                                             title="Ver pago"
                                                         >
-
                                                             <i class="fas fa-eye"></i>
+                                                        </a>
 
+                                                        {{-- PDF --}}
+                                                        <a
+                                                            href="{{ route('pagos.pdf', $pago->id) }}"
+                                                            class="btn btn-secondary btn-action"
+                                                            target="_blank"
+                                                            title="Exportar PDF"
+                                                            style="background-color: #e056fd; border-color: #e056fd; color: #fff;"
+                                                        >
+                                                            <i class="fas fa-file-pdf"></i>
                                                         </a>
 
                                                         {{-- EDITAR --}}

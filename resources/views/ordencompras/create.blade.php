@@ -96,7 +96,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
-                                                Fecha <span class="text-danger">*</span>
+                                                Fecha y Hora <span class="text-danger">*</span>
                                             </label>
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
@@ -105,10 +105,10 @@
                                                     </span>
                                                 </div>
                                                 <input
-                                                    type="date"
+                                                    type="datetime-local"
                                                     name="fecha"
                                                     class="form-control modern-input"
-                                                    value="{{ date('Y-m-d') }}"
+                                                    value="{{ date('Y-m-d\TH:i') }}"
                                                     required
                                                 >
                                             </div>
@@ -218,6 +218,7 @@
                                                     id="precio"
                                                     class="form-control modern-input"
                                                     placeholder="Precio unitario"
+                                                    readonly
                                                     required
                                                 >
                                             </div>
@@ -296,6 +297,61 @@
                                                     <option value="contado">Contado</option>
                                                     <option value="credito">Crédito</option>
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Método de Pago --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Método de Pago <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-money-bill-wave"></i>
+                                                    </span>
+                                                </div>
+                                                <select
+                                                    name="metodopago_id"
+                                                    id="metodopago_id"
+                                                    class="form-control modern-input"
+                                                    required
+                                                >
+                                                    <option value="">Seleccione método de pago</option>
+                                                    @foreach($metodospago as $metodo)
+                                                        <option value="{{ $metodo->id }}">
+                                                            {{ $metodo->nombre }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Abono --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Abono <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-hand-holding-usd"></i>
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    name="abono"
+                                                    id="abono"
+                                                    class="form-control modern-input"
+                                                    value="0"
+                                                    min="0"
+                                                    required
+                                                >
                                             </div>
                                         </div>
                                     </div>
@@ -394,7 +450,12 @@
         });
 
         // Al ingresar cantidad o precio, calcular
-        $('#cantidad, #precio').on('input', function() {
+        $('#cantidad').on('input', function() {
+            calcularTotales();
+        });
+
+        // Al ingresar abono, calcular
+        $('#abono').on('input', function() {
             calcularTotales();
         });
 
@@ -402,6 +463,9 @@
         $('#tipopago').on('change', function() {
             calcularTotales();
         });
+
+        // Inicializar
+        calcularTotales();
 
         function calcularTotales() {
             let cantidad = parseFloat($('#cantidad').val()) || 0;
@@ -412,12 +476,24 @@
             $('#total').val(subtotal.toFixed(2));
 
             let tipoPago = $('#tipopago').val();
+            let abonoInput = $('#abono');
+            let abono = parseFloat(abonoInput.val()) || 0;
+
             if (tipoPago === 'contado') {
+                abonoInput.val(subtotal.toFixed(2));
+                abonoInput.prop('readonly', true);
                 $('#saldopendiente').val((0).toFixed(2));
             } else if (tipoPago === 'credito') {
-                // Si es crédito, el saldo pendiente es igual al total
-                $('#saldopendiente').val(subtotal.toFixed(2));
+                abonoInput.prop('readonly', false);
+                if (abono > subtotal) {
+                    abono = subtotal;
+                    abonoInput.val(abono.toFixed(2));
+                }
+                let saldo = subtotal - abono;
+                $('#saldopendiente').val(saldo.toFixed(2));
             } else {
+                abonoInput.val((0).toFixed(2));
+                abonoInput.prop('readonly', true);
                 $('#saldopendiente').val((0).toFixed(2));
             }
         }

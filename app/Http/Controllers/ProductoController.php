@@ -305,7 +305,7 @@ class ProductoController extends Controller
         // cambiar estado
         // =========================
         $producto->estado = $request->estado;
-
+        
         $producto->save();
 
         // =========================
@@ -317,5 +317,56 @@ class ProductoController extends Controller
 
             'message' => 'Estado actualizado'
         ]);
+    }
+
+    // =========================
+    // EXPORTAR A EXCEL (CSV)
+    // =========================
+    public function exportExcel()
+    {
+        $productos = Producto::all();
+        $filename = "productos_" . date('Ymd_His') . ".csv";
+
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $columns = ['ID', 'Nombre', 'Código', 'Stock', 'Precio Compra', 'Precio Venta', 'Estado', 'Registrado Por'];
+
+        $callback = function() use($productos, $columns) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, $columns, ';');
+
+            foreach ($productos as $producto) {
+                fputcsv($file, [
+                    $producto->id,
+                    $producto->nombre,
+                    $producto->codigo,
+                    $producto->stock,
+                    $producto->preciocompra,
+                    $producto->precioventa,
+                    $producto->estado == 1 ? 'Activo' : 'Inactivo',
+                    $producto->registradopor
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // =========================
+    // EXPORTAR A PDF (PRINT VIEW)
+    // =========================
+    public function exportPdf($id)
+    {
+        $producto = Producto::findOrFail($id);
+        return view('productos.pdf', compact('producto'));
     }
 }
