@@ -95,18 +95,66 @@
 
                     </div>
 
+                    {{-- ========================================== --}}
+                    {{-- TABLA DE DETALLES DE PRODUCTOS --}}
+                    {{-- ========================================== --}}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4 style="font-weight: bold; color: #1e3d59; border-bottom: 2px solid #1e3d59; padding-bottom: 8px; margin-bottom: 15px;">
+                                <i class="fas fa-box mr-2"></i> Productos Adquiridos
+                            </h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th style="width: 150px; text-align: right;">Precio Unitario</th>
+                                            <th style="width: 120px; text-align: right;">Cantidad</th>
+                                            <th style="width: 150px; text-align: right;">Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($ordencompra->detallesCompras as $detalle)
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ $detalle->producto->nombre ?? 'N/A' }}</strong>
+                                                    @if($detalle->producto && $detalle->producto->descripcion)
+                                                        <br><small class="text-muted">{{ $detalle->producto->descripcion }}</small>
+                                                    @endif
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    ${{ number_format($detalle->subtotal / ($detalle->cantidad ?: 1), 2) }}
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    {{ $detalle->cantidad }}
+                                                </td>
+                                                <td style="text-align: right;">
+                                                    ${{ number_format($detalle->subtotal, 2) }}
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center">No hay productos registrados en esta orden.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 {{-- ========================= --}}
                 {{-- FOOTER --}}
                 {{-- ========================= --}}
-                <div class="card-footer">
-
-                    <a href="{{ route('ordencompras.index') }}" class="btn btn-danger">
-                        <i class="fas fa-arrow-left"></i>
-                        Volver
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ route('ordencompras.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al listado
                     </a>
-
+                    <a href="{{ route('ordencompras.pdf', $ordencompra->id) }}" target="_blank" class="btn btn-danger">
+                        <i class="fas fa-file-pdf mr-1"></i> Imprimir Comprobante
+                    </a>
                 </div>
 
             </div>

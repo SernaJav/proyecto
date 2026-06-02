@@ -158,6 +158,8 @@ Route::middleware(['auth'])->group(function () {
     |--------------------------------------------------------------------------
     */
 
+    Route::get('ordencompras/excel', [OrdenCompraController::class, 'exportExcel'])->name('ordencompras.excel');
+    Route::get('ordencompras/{id}/pdf', [OrdenCompraController::class, 'exportPdf'])->name('ordencompras.pdf');
     Route::resource('ordencompras', OrdenCompraController::class);
 
     Route::get(

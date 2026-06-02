@@ -6,6 +6,8 @@ use App\Http\Requests\OrdencompraRequest;
 use App\Models\OrdenCompra;
 use App\Models\Proveedor;
 use App\Models\MetodoPago;
+use App\Models\Producto;
+use App\Models\DetalleCompra;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -47,11 +49,20 @@ class OrdenCompraController extends Controller
             1
         )->get();
 
+        // =========================
+        // traer productos activos
+        // =========================
+        $productos = Producto::where(
+            'estado',
+            1
+        )->get();
+
         return view(
             'ordencompras.create',
             compact(
                 'proveedores',
-                'metodospago'
+                'metodospago',
+                'productos'
             )
         );
     }
@@ -62,6 +73,7 @@ class OrdenCompraController extends Controller
     public function store(OrdencompraRequest $request)
     {
         try {
+            \DB::beginTransaction();
 
             // =========================
             // crear orden
@@ -71,18 +83,48 @@ class OrdenCompraController extends Controller
             $data['estado'] = 1;
             $data['registradopor'] = auth()->user()->name;
 
-            OrdenCompra::create($data);
+            // Lógica de saldo pendiente según el tipo de pago
+            if ($data['tipopago'] == 'contado') {
+                $data['saldopendiente'] = 0;
+            } else {
+                $data['saldopendiente'] = $data['total'];
+            }
+
+            $orden = OrdenCompra::create($data);
+
+            // =========================
+            // crear detalle de compra
+            // =========================
+            DetalleCompra::create([
+                'ordencompra_id' => $orden->id,
+                'producto_id' => $data['producto_id'],
+                'cantidad' => $data['cantidad'],
+                'subtotal' => $data['subtotal'],
+                'registradopor' => auth()->user()->name
+            ]);
+
+            // =========================
+            // actualizar stock de producto
+            // =========================
+            if ($data['tipopago'] == 'contado') {
+                $producto = Producto::findOrFail($data['producto_id']);
+                $producto->stock -= $data['cantidad'];
+                $producto->save();
+            }
+
+            \DB::commit();
 
             return redirect()
                 ->route('ordencompras.index')
                 ->with(
-                    'success',
-                    'Orden creada correctamente'
+                   'success',
+                   'Orden creada correctamente'
                 );
 
         } catch (Exception $e) {
+            \DB::rollBack();
             Log::error($e->getMessage());
-            return back()->withErrors('Ocurrió un error inesperado al crear la orden');
+            return back()->withErrors('Ocurrió un error inesperado al crear la orden: ' . $e->getMessage());
         }
     }
 
@@ -116,12 +158,21 @@ class OrdenCompraController extends Controller
             1
         )->get();
 
+        $productos = Producto::where(
+            'estado',
+            1
+        )->get();
+
+        $detalle = $ordencompra->detallesCompras()->first();
+
         return view(
             'ordencompras.edit',
             compact(
                 'ordencompra',
                 'proveedores',
-                'metodospago'
+                'metodospago',
+                'productos',
+                'detalle'
             )
         );
     }
@@ -135,11 +186,65 @@ class OrdenCompraController extends Controller
     )
     {
         try {
+            \DB::beginTransaction();
 
             $ordencompra = OrdenCompra::findOrFail($id);
             $data = $request->validated();
 
+            // Lógica de saldo pendiente según el tipo de pago
+            if ($data['tipopago'] == 'contado') {
+                $data['saldopendiente'] = 0;
+            } else {
+                $data['saldopendiente'] = $data['total'];
+            }
+
+            // ==========================================
+            // REVERTIR stock anterior si era contado
+            // ==========================================
+            $prevDetalle = $ordencompra->detallesCompras()->first();
+            if ($prevDetalle) {
+                if ($ordencompra->tipopago == 'contado') {
+                    $prevProd = Producto::find($prevDetalle->producto_id);
+                    if ($prevProd) {
+                        $prevProd->stock += $prevDetalle->cantidad;
+                        $prevProd->save();
+                    }
+                }
+            }
+
+            // Actualizar la orden
             $ordencompra->update($data);
+
+            // ==========================================
+            // ACTUALIZAR o crear detalle
+            // ==========================================
+            if ($prevDetalle) {
+                $prevDetalle->update([
+                    'producto_id' => $data['producto_id'],
+                    'cantidad' => $data['cantidad'],
+                    'subtotal' => $data['subtotal'],
+                    'registradopor' => auth()->user()->name
+                ]);
+            } else {
+                DetalleCompra::create([
+                    'ordencompra_id' => $ordencompra->id,
+                    'producto_id' => $data['producto_id'],
+                    'cantidad' => $data['cantidad'],
+                    'subtotal' => $data['subtotal'],
+                    'registradopor' => auth()->user()->name
+                ]);
+            }
+
+            // ==========================================
+            // APLICAR nuevo stock si es de contado
+            // ==========================================
+            if ($data['tipopago'] == 'contado') {
+                $newProd = Producto::findOrFail($data['producto_id']);
+                $newProd->stock -= $data['cantidad'];
+                $newProd->save();
+            }
+
+            \DB::commit();
 
             return redirect()
                 ->route('ordencompras.index')
@@ -149,8 +254,9 @@ class OrdenCompraController extends Controller
                 );
 
         } catch (Exception $e) {
+            \DB::rollBack();
             Log::error($e->getMessage());
-            return back()->withErrors('Ocurrió un error inesperado al actualizar la orden');
+            return back()->withErrors('Ocurrió un error inesperado al actualizar la orden: ' . $e->getMessage());
         }
     }
 
@@ -196,5 +302,57 @@ class OrdenCompraController extends Controller
         $orden->save();
 
         return response()->json(['success' => true, 'message' => 'Estado actualizado correctamente']);
+    }
+
+    // =========================
+    // EXPORTAR A EXCEL (CSV)
+    // =========================
+    public function exportExcel()
+    {
+        $ordencompras = OrdenCompra::with('proveedor')->get();
+        $filename = "ordenes_compra_" . date('Ymd_His') . ".csv";
+
+        $headers = [
+            "Content-type" => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $columns = ['ID', 'Proveedor', 'Fecha', 'Total', 'Tipo Pago', 'Saldo Pendiente', 'Estado', 'Registrado Por'];
+
+        $callback = function() use($ordencompras, $columns) {
+            $file = fopen('php://output', 'w');
+            // Agregar BOM UTF-8 para que Excel detecte correctamente la codificación y los acentos
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            fputcsv($file, $columns, ';');
+
+            foreach ($ordencompras as $orden) {
+                fputcsv($file, [
+                    $orden->id,
+                    $orden->proveedor->nombre ?? 'Sin proveedor',
+                    $orden->fecha ? $orden->fecha->format('d/m/Y') : 'N/A',
+                    $orden->total,
+                    $orden->tipopago,
+                    $orden->saldopendiente,
+                    $orden->estado == 1 ? 'Activo' : 'Inactivo',
+                    $orden->registradopor
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // =========================
+    // EXPORTAR A PDF (PRINT VIEW)
+    // =========================
+    public function exportPdf($id)
+    {
+        $ordencompra = OrdenCompra::with(['proveedor', 'detallesCompras.producto'])->findOrFail($id);
+        return view('ordencompras.pdf', compact('ordencompra'));
     }
 }

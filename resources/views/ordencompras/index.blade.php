@@ -77,18 +77,24 @@
                                 </h3>
 
                                 {{-- ========================= --}}
-                                {{-- BOTÓN NUEVO --}}
+                                {{-- BOTONES DE ACCIÓN --}}
                                 {{-- ========================= --}}
-                                <a
-                                    href="{{ route('ordencompras.create') }}"
-                                    class="btn btn-primary btn-modern"
-                                >
-
-                                    <i class="fas fa-plus mr-1"></i>
-
-                                    Nuevo
-
-                                </a>
+                                <div class="d-flex">
+                                    <a
+                                        href="{{ route('ordencompras.create') }}"
+                                        class="btn btn-primary btn-modern mr-2"
+                                    >
+                                        <i class="fas fa-plus mr-1"></i>
+                                        Nuevo
+                                    </a>
+                                    <a
+                                        href="{{ route('ordencompras.excel') }}"
+                                        class="btn btn-success btn-modern"
+                                    >
+                                        <i class="fas fa-file-excel mr-1"></i>
+                                        Excel
+                                    </a>
+                                </div>
 
                             </div>
 
@@ -282,9 +288,7 @@
                                                             class="btn btn-info btn-action"
                                                             title="Ver orden"
                                                         >
-
                                                             <i class="fas fa-eye"></i>
-
                                                         </a>
 
                                                         {{-- EDITAR --}}
@@ -293,9 +297,17 @@
                                                             class="btn btn-primary btn-action"
                                                             title="Editar orden"
                                                         >
-
                                                             <i class="fas fa-pencil-alt"></i>
+                                                        </a>
 
+                                                        {{-- PDF --}}
+                                                        <a
+                                                            href="{{ route('ordencompras.pdf', $orden->id) }}"
+                                                            class="btn btn-danger btn-action"
+                                                            target="_blank"
+                                                            title="Imprimir PDF"
+                                                        >
+                                                            <i class="fas fa-file-pdf"></i>
                                                         </a>
 
                                                         {{-- ELIMINAR --}}
@@ -304,21 +316,15 @@
                                                             action="{{ route('ordencompras.destroy', $orden->id) }}"
                                                             method="POST"
                                                         >
-
                                                             @csrf
-
                                                             @method('DELETE')
-
                                                             <button
                                                                 type="submit"
                                                                 class="btn btn-danger btn-action"
                                                                 title="Eliminar orden"
                                                             >
-
                                                                 <i class="fas fa-trash-alt"></i>
-
                                                             </button>
-
                                                         </form>
 
                                                     </div>
@@ -354,7 +360,7 @@
 {{-- ========================= --}}
 {{-- DATATABLE --}}
 {{-- ========================= --}}
-@section('js')
+@push('scripts')
 
 <script>
 
@@ -407,4 +413,4 @@
 
 </script>
 
-@endsection
+@endpush

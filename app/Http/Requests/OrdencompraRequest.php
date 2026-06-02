@@ -38,6 +38,26 @@ class OrdencompraRequest extends FormRequest
             'proveedor_id' => 'required|integer|exists:proveedores,id',
 
             // =========================
+            // producto (relación)
+            // =========================
+            'producto_id' => 'required|integer|exists:productos,id',
+
+            // =========================
+            // cantidad
+            // =========================
+            'cantidad' => 'required|integer|min:1',
+
+            // =========================
+            // precio
+            // =========================
+            'precio' => 'required|numeric|min:0',
+
+            // =========================
+            // subtotal
+            // =========================
+            'subtotal' => 'required|numeric|min:0',
+
+            // =========================
             // total
             // =========================
             'total' => 'required|numeric|min:0',
@@ -60,7 +80,7 @@ class OrdencompraRequest extends FormRequest
             // =========================
             // registrado por (opcional, se puede asignar automáticamente)
             // =========================
-            'registradopor' => 'nullable|integer|exists:users,id'
+            'registradopor' => 'nullable|string'
         ];
     }
 
@@ -105,6 +125,42 @@ class OrdencompraRequest extends FormRequest
             'tipopago.in' =>
                 'El tipo de pago debe ser "contado" o "credito".',
 
+            'producto_id.required' =>
+                'El producto es obligatorio.',
+
+            'producto_id.integer' =>
+                'El ID del producto debe ser un número entero.',
+
+            'producto_id.exists' =>
+                'El producto especificado no existe.',
+
+            'cantidad.required' =>
+                'La cantidad es obligatoria.',
+
+            'cantidad.integer' =>
+                'La cantidad debe ser un número entero.',
+
+            'cantidad.min' =>
+                'La cantidad debe ser al menos 1.',
+
+            'precio.required' =>
+                'El precio es obligatorio.',
+
+            'precio.numeric' =>
+                'El precio debe ser un número decimal.',
+
+            'precio.min' =>
+                'El precio no puede ser negativo.',
+
+            'subtotal.required' =>
+                'El subtotal es obligatorio.',
+
+            'subtotal.numeric' =>
+                'El subtotal debe ser un número decimal.',
+
+            'subtotal.min' =>
+                'El subtotal no puede ser negativo.',
+
             'saldopendiente.numeric' =>
                 'El saldo pendiente debe ser un valor numérico.',
 
@@ -112,13 +168,7 @@ class OrdencompraRequest extends FormRequest
                 'El saldo pendiente no puede ser negativo.',
 
             'estado.in' =>
-                'El estado debe ser 1 o 0.',
-
-            'registradopor.integer' =>
-                'El campo registrado por debe ser un número entero.',
-
-            'registradopor.exists' =>
-                'El usuario registrado no existe en la base de datos.'
+                'El estado debe ser 1 o 0.'
         ];
     }
 }

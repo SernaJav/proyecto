@@ -15,35 +15,7 @@
                 <div class="form-group mb-3">
                     <label>Foto actual</label>
                     <div>
-                        @php
-                            $photo = Auth::user()->photo;
-                            $isDataUrl = is_string($photo) && strpos($photo, 'data:') === 0;
-                            $storageKey = null;
-
-                            if (! $isDataUrl && $photo) {
-                                if (strpos($photo, 'storage/') === 0) {
-                                    $storageKey = substr($photo, strlen('storage/'));
-                                } elseif (strpos($photo, 'users/') === 0) {
-                                    $storageKey = $photo;
-                                } else {
-                                    $storageKey = 'users/' . $photo;
-                                }
-                            }
-
-                            $storagePhoto = $storageKey && Storage::disk('public')->exists($storageKey);
-                            $storageUrl = $storagePhoto ? url('storage-file/' . $storageKey) : null;
-                            $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . basename($photo)));
-                        @endphp
-
-                        @if ($isDataUrl)
-                            <img src="{{ $photo }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-                        @elseif ($storagePhoto)
-                            <img src="{{ $storageUrl }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-                        @elseif ($legacyPhoto)
-                            <img src="{{ asset('uploads/users/' . $photo) }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-                        @else
-                            <img src="{{ asset('backend/dist/img/avatar.png') }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-                        @endif
+                        <img src="{{ Auth::user()->photo_url }}" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
                     </div>
                 </div>
 

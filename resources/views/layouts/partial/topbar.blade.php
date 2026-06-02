@@ -43,22 +43,8 @@
                 ">
 
                     {{-- AVATAR ROBUSTO --}}
-                    @php
-                        $photo = Auth::user()->photo;
-
-                        // limpiar posibles rutas malas
-                        if ($photo) {
-                            $photo = str_replace('storage/', '', $photo);
-                        }
-                    @endphp
-
-                    @if ($photo)
-                        <img src="{{ asset('storage/' . $photo) }}"
-                             style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                    @else
-                        <img src="{{ asset('backend/dist/img/avatar.png') }}"
-                             style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                    @endif
+                    <img src="{{ Auth::user()->photo_url }}"
+                         style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
 
                     {{-- Datos --}}
                     <div style="line-height: 1.3;">

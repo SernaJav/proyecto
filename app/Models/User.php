@@ -47,4 +47,54 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Accesor para obtener la URL correcta y robusta de la foto de perfil.
+     */
+    public function getPhotoUrlAttribute()
+    {
+        $photo = $this->photo;
+
+        if (!$photo) {
+            return asset('backend/dist/img/avatar.png');
+        }
+
+        // Si es una URL externa completa
+        if (filter_var($photo, FILTER_VALIDATE_URL)) {
+            return $photo;
+        }
+
+        // Si es base64
+        if (strpos($photo, 'data:image') === 0) {
+            return $photo;
+        }
+
+        // Limpiar prefijo storage/ si existe
+        if (strpos($photo, 'storage/') === 0) {
+            $photo = substr($photo, 8);
+        }
+
+        // Soporte para archivos legados en public/uploads/users/
+        $basename = basename($photo);
+        if (file_exists(public_path('uploads/users/' . $basename))) {
+            return asset('uploads/users/' . $basename);
+        }
+
+        // Si la ruta no tiene el prefijo "users/", pero es un nombre de archivo
+        if (strpos($photo, '/') === false) {
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists('users/' . $photo)) {
+                $photo = 'users/' . $photo;
+            } elseif (\Illuminate\Support\Facades\Storage::disk('public')->exists($photo)) {
+                // Existe en la raíz de public
+            } else {
+                return asset('backend/dist/img/avatar.png');
+            }
+        } else {
+            if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($photo)) {
+                return asset('backend/dist/img/avatar.png');
+            }
+        }
+
+        return url('storage-file/' . $photo);
+    }
 }

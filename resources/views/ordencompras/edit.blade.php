@@ -50,6 +50,7 @@
 
                             <div class="card-body">
                                 <div class="row">
+                                    {{-- Fecha --}}
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
@@ -66,13 +67,14 @@
                                                     type="date"
                                                     name="fecha"
                                                     class="form-control modern-input"
-                                                    value="{{ old('fecha', $ordencompra->fecha->format('Y-m-d')) }}"
+                                                    value="{{ old('fecha', $ordencompra->fecha ? $ordencompra->fecha->format('Y-m-d') : '') }}"
                                                     required
                                                 >
                                             </div>
                                         </div>
                                     </div>
 
+                                    {{-- Proveedor --}}
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
@@ -87,7 +89,8 @@
                                                 </div>
                                                 <select
                                                     name="proveedor_id"
-                                                    class="form-control modern-input"
+                                                    id="proveedor_id"
+                                                    class="form-control modern-input select2"
                                                     required
                                                 >
                                                     <option value="">Seleccione proveedor</option>
@@ -104,6 +107,117 @@
                                         </div>
                                     </div>
 
+                                    {{-- Producto (Select2 con data-precio) --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Producto <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-box"></i>
+                                                    </span>
+                                                </div>
+                                                <select
+                                                    name="producto_id"
+                                                    id="producto_id"
+                                                    class="form-control modern-input select2"
+                                                    required
+                                                >
+                                                    <option value="">Seleccione producto</option>
+                                                    @foreach($productos as $producto)
+                                                        <option 
+                                                            value="{{ $producto->id }}" 
+                                                            data-precio="{{ $producto->preciocompra }}"
+                                                            {{ old('producto_id', $detalle->producto_id ?? '') == $producto->id ? 'selected' : '' }}
+                                                        >
+                                                            {{ $producto->nombre }} (Stock actual: {{ $producto->stock }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Cantidad --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Cantidad <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-sort-numeric-up-alt"></i>
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="number"
+                                                    name="cantidad"
+                                                    id="cantidad"
+                                                    class="form-control modern-input"
+                                                    placeholder="Cantidad a comprar"
+                                                    min="1"
+                                                    value="{{ old('cantidad', $detalle->cantidad ?? 1) }}"
+                                                    required
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Precio de Compra --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Precio Unitario <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-tag"></i>
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    name="precio"
+                                                    id="precio"
+                                                    class="form-control modern-input"
+                                                    placeholder="Precio unitario"
+                                                    value="{{ old('precio', $detalle ? round($detalle->subtotal / ($detalle->cantidad ?: 1), 2) : 0) }}"
+                                                    required
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Subtotal --}}
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                Subtotal
+                                            </label>
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">
+                                                        <i class="fas fa-coins"></i>
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    name="subtotal"
+                                                    id="subtotal"
+                                                    class="form-control modern-input"
+                                                    value="{{ old('subtotal', $detalle->subtotal ?? 0) }}"
+                                                    readonly
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Total de la Compra --}}
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
@@ -120,15 +234,18 @@
                                                     type="number"
                                                     step="0.01"
                                                     name="total"
+                                                    id="total"
                                                     class="form-control modern-input"
                                                     placeholder="Ingrese el total"
                                                     value="{{ old('total', $ordencompra->total) }}"
+                                                    readonly
                                                     required
                                                 >
                                             </div>
                                         </div>
                                     </div>
 
+                                    {{-- Tipo de Pago --}}
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">
@@ -143,25 +260,19 @@
                                                 </div>
                                                 <select
                                                     name="tipopago"
+                                                    id="tipopago"
                                                     class="form-control modern-input"
                                                     required
                                                 >
                                                     <option value="">Seleccione</option>
-                                                    @foreach($metodospago as $metodo)
-                                                        @if($metodo->estado == 1)
-                                                            <option
-                                                                value="{{ $metodo->nombre }}"
-                                                                {{ old('tipopago', $ordencompra->tipopago) == $metodo->nombre ? 'selected' : '' }}
-                                                            >
-                                                                {{ $metodo->nombre }}
-                                                            </option>
-                                                        @endif
-                                                    @endforeach
+                                                    <option value="contado" {{ old('tipopago', $ordencompra->tipopago) == 'contado' ? 'selected' : '' }}>Contado</option>
+                                                    <option value="credito" {{ old('tipopago', $ordencompra->tipopago) == 'credito' ? 'selected' : '' }}>Crédito</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </div>
 
+                                    {{-- Saldo Pendiente --}}
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label class="form-label">Saldo Pendiente</label>
@@ -175,9 +286,11 @@
                                                     type="number"
                                                     step="0.01"
                                                     name="saldopendiente"
+                                                    id="saldopendiente"
                                                     class="form-control modern-input"
                                                     placeholder="Ingrese el saldo pendiente"
                                                     value="{{ old('saldopendiente', $ordencompra->saldopendiente) }}"
+                                                    readonly
                                                 >
                                             </div>
                                         </div>
@@ -218,3 +331,52 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Inicializar Select2
+        $('.select2').select2({
+            width: '100%',
+            placeholder: "Selecciona una opción",
+            allowClear: true
+        });
+
+        // Al cambiar de producto, cargar el precio de compra
+        $('#producto_id').on('change', function() {
+            let precio = $(this).find(':selected').data('precio') || 0;
+            $('#precio').val(parseFloat(precio).toFixed(2));
+            calcularTotales();
+        });
+
+        // Al ingresar cantidad o precio, calcular
+        $('#cantidad, #precio').on('input', function() {
+            calcularTotales();
+        });
+
+        // Al cambiar el tipo de pago, recalcular saldo pendiente
+        $('#tipopago').on('change', function() {
+            calcularTotales();
+        });
+
+        function calcularTotales() {
+            let cantidad = parseFloat($('#cantidad').val()) || 0;
+            let precio = parseFloat($('#precio').val()) || 0;
+            let subtotal = cantidad * precio;
+            
+            $('#subtotal').val(subtotal.toFixed(2));
+            $('#total').val(subtotal.toFixed(2));
+
+            let tipoPago = $('#tipopago').val();
+            if (tipoPago === 'contado') {
+                $('#saldopendiente').val((0).toFixed(2));
+            } else if (tipoPago === 'credito') {
+                // Si es crédito, el saldo pendiente es igual al total
+                $('#saldopendiente').val(subtotal.toFixed(2));
+            } else {
+                $('#saldopendiente').val((0).toFixed(2));
+            }
+        }
+    });
+</script>
+@endpush
