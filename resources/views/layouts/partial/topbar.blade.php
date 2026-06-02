@@ -10,8 +10,11 @@
     <ul class="navbar-nav">
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button" style="
-                width: 38px; height: 38px;
-                display: flex; align-items: center; justify-content: center;
+                width: 38px;
+                height: 38px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 border-radius: 8px;
                 color: #4a5568;
                 transition: background 0.15s;
@@ -23,58 +26,36 @@
         </li>
     </ul>
 
-    {{-- Lado derecho: usuario + logout --}}
+    {{-- Lado derecho --}}
     <ul class="navbar-nav ml-auto d-flex align-items-center" style="gap: 8px;">
 
-        {{-- Chip de usuario --}}
+        {{-- Usuario --}}
         <li class="nav-item">
             <a href="{{ route('profile.edit') }}" style="text-decoration:none;color:inherit;">
                 <div style="
-                    display: flex; align-items: center; gap: 10px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
                     background: #f7fafc;
                     border: 0.5px solid #e2e8f0;
                     border-radius: 30px;
                     padding: 5px 14px 5px 6px;
                 ">
-                    {{-- Avatar --}}
+
+                    {{-- Avatar limpio --}}
                     @php
                         $photo = Auth::user()->photo;
-                        $isDataUrl = is_string($photo) && strpos($photo, 'data:') === 0;
-                        $storageKey = null;
-
-                        if (! $isDataUrl && $photo) {
-                            if (strpos($photo, 'storage/') === 0) {
-                                $storageKey = substr($photo, strlen('storage/'));
-                            } elseif (strpos($photo, 'users/') === 0) {
-                                $storageKey = $photo;
-                            } else {
-                                $storageKey = 'users/' . $photo;
-                            }
-                        }
-
-                        $storagePhoto = $storageKey && Storage::disk('public')->exists($storageKey);
-                        $storageUrl = $storagePhoto ? url('storage-file/' . $storageKey) : null;
-                        $legacyPhoto = $photo && file_exists(public_path('uploads/users/' . basename($photo)));
                     @endphp
 
-                    @if ($isDataUrl)
-                        <img
-                            src="{{ $photo }}"
-                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                    @elseif ($storagePhoto)
-                        <img
-                            src="{{ $storageUrl }}"
-                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                    @elseif ($legacyPhoto)
-                        <img
-                            src="{{ asset('uploads/users/' . $photo) }}"
-                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                    @if ($photo)
+                        <img src="{{ asset('storage/' . $photo) }}"
+                             style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
                     @else
-                        <img
-                            src="{{ asset('backend/dist/img/avatar.png') }}"
-                            style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+                        <img src="{{ asset('backend/dist/img/avatar.png') }}"
+                             style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
                     @endif
-                    {{-- Nombre y rol --}}
+
+                    {{-- Datos usuario --}}
                     <div style="line-height: 1.3;">
                         <div style="font-size: 13px; font-weight: 600; color: #2d3748;">
                             {{ Auth::user()->name }}
@@ -83,16 +64,17 @@
                             {{ Auth::user()->email }}
                         </div>
                     </div>
+
                 </div>
             </a>
         </li>
 
-        {{-- Separador vertical --}}
+        {{-- Separador --}}
         <li class="nav-item">
             <div style="width: 1px; height: 28px; background: #e2e8f0;"></div>
         </li>
 
-        {{-- Botón logout --}}
+        {{-- Logout --}}
         <li class="nav-item">
             <a class="nav-link"
                href="{{ route('logout') }}"
@@ -100,8 +82,11 @@
                title="Cerrar Sesión"
                role="button"
                style="
-                   width: 38px; height: 38px;
-                   display: flex; align-items: center; justify-content: center;
+                   width: 38px;
+                   height: 38px;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
                    border-radius: 8px;
                    border: 0.5px solid #fed7d7;
                    background: #fff5f5;

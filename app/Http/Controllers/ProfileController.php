@@ -22,47 +22,27 @@ class ProfileController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
+
             $file = $request->file('photo');
+
+            // nombre único
             $filename = $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-            // Intentar guardar en disco público (storage/app/public/users)
-            try {
-                if (! Storage::disk('public')->exists('users')) {
-                    Storage::disk('public')->makeDirectory('users');
-                }
+            // guardar en storage/app/public/users
+            Storage::disk('public')->putFileAs('users', $file, $filename);
 
-                Storage::disk('public')->putFileAs('users', $file, $filename);
-
-                // eliminar foto antigua en storage o en uploads legacy
-                if ($user->photo && strpos($user->photo, 'data:') !== 0) {
-                    $oldPhotoKey = strpos($user->photo, 'storage/') === 0
-                        ? substr($user->photo, strlen('storage/'))
-                        : (strpos($user->photo, 'users/') === 0
-                            ? $user->photo
-                            : 'users/' . $user->photo);
-
-                    if (Storage::disk('public')->exists($oldPhotoKey)) {
-                        Storage::disk('public')->delete($oldPhotoKey);
-                    } elseif (file_exists(public_path('uploads/users/' . basename($oldPhotoKey)))) {
-                        @unlink(public_path('uploads/users/' . basename($oldPhotoKey)));
-                    }
-                }
-
-                $user->photo = 'storage/users/' . $filename;
-                $user->save();
-            } catch (\Exception $e) {
-                // Si falla la escritura en disco (por permisos en el servidor),
-                // guardamos la imagen en la BD como data-URL para que se muestre.
-                $contents = file_get_contents($file->getPathname());
-                $base64 = base64_encode($contents);
-                $mime = $file->getClientMimeType();
-                $dataUrl = "data:{$mime};base64,{$base64}";
-
-                $user->photo = $dataUrl;
-                $user->save();
+            // borrar foto anterior (si existe)
+            if ($user->photo && Storage::disk('public')->exists($user->photo)) {
+                Storage::disk('public')->delete($user->photo);
             }
+
+            // guardar SOLO ruta limpia
+            $user->photo = 'users/' . $filename;
+            $user->save();
         }
 
-        return redirect()->route('profile.edit')->with('success', 'Foto de perfil actualizada');
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Foto de perfil actualizada correctamente');
     }
 }
