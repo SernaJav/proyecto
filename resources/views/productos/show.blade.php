@@ -77,7 +77,7 @@
 
                             <p><b>Precio:</b> ${{ number_format($producto->preciocompra, 2) }}</p>
 
-                            <p><b>Stock:</b> {{ $producto->stockmaximo }}</p>
+                            <p><b>Stock:</b> {{ $producto->stock }}</p>
 
                             <p><b>Estado:</b>
                                 @if($producto->estado == 1)

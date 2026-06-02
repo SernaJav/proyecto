@@ -92,6 +92,10 @@ class OrdenCompraController extends Controller
                 $data['saldopendiente'] = $data['total'] - $data['abono'];
             }
 
+            if (empty($data['metodopago_id'])) {
+                $data['metodopago_id'] = MetodoPago::where('estado', 1)->first()?->id;
+            }
+
             $orden = OrdenCompra::create($data);
 
             // =========================
@@ -106,13 +110,11 @@ class OrdenCompraController extends Controller
             ]);
 
             // =========================
-            // actualizar stock de producto
+            // actualizar stock de producto (incondicional)
             // =========================
-            if ($data['tipopago'] == 'contado') {
-                $producto = Producto::findOrFail($data['producto_id']);
-                $producto->stock -= $data['cantidad'];
-                $producto->save();
-            }
+            $producto = Producto::findOrFail($data['producto_id']);
+            $producto->stock -= $data['cantidad'];
+            $producto->save();
 
             // =========================
             // registrar pago si abono > 0
@@ -214,17 +216,19 @@ class OrdenCompraController extends Controller
                 $data['saldopendiente'] = $data['total'] - $data['abono'];
             }
 
+            if (empty($data['metodopago_id'])) {
+                $data['metodopago_id'] = MetodoPago::where('estado', 1)->first()?->id;
+            }
+
             // ==========================================
-            // REVERTIR stock anterior si era contado
+            // REVERTIR stock anterior
             // ==========================================
             $prevDetalle = $ordencompra->detallesCompras()->first();
             if ($prevDetalle) {
-                if ($ordencompra->tipopago == 'contado') {
-                    $prevProd = Producto::find($prevDetalle->producto_id);
-                    if ($prevProd) {
-                        $prevProd->stock += $prevDetalle->cantidad;
-                        $prevProd->save();
-                    }
+                $prevProd = Producto::find($prevDetalle->producto_id);
+                if ($prevProd) {
+                    $prevProd->stock += $prevDetalle->cantidad;
+                    $prevProd->save();
                 }
             }
 
@@ -252,13 +256,11 @@ class OrdenCompraController extends Controller
             }
 
             // ==========================================
-            // APLICAR nuevo stock si es de contado
+            // APLICAR nuevo stock (incondicional)
             // ==========================================
-            if ($data['tipopago'] == 'contado') {
-                $newProd = Producto::findOrFail($data['producto_id']);
-                $newProd->stock -= $data['cantidad'];
-                $newProd->save();
-            }
+            $newProd = Producto::findOrFail($data['producto_id']);
+            $newProd->stock -= $data['cantidad'];
+            $newProd->save();
 
             // ==========================================
             // Sincronizar o crear el registro en la tabla pagos

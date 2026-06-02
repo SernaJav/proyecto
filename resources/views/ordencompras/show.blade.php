@@ -43,13 +43,13 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label><b>Fecha</b></label>
+                            <label><b>Fecha y Hora</b></label>
                             <p>
                                 @if($ordencompra->fecha)
                                     @if(is_string($ordencompra->fecha))
-                                        {{ \Carbon\Carbon::parse($ordencompra->fecha)->format('d/m/Y') }}
+                                        {{ \Carbon\Carbon::parse($ordencompra->fecha)->format('d/m/Y H:i') }}
                                     @else
-                                        {{ $ordencompra->fecha->format('d/m/Y') }}
+                                        {{ $ordencompra->fecha->format('d/m/Y H:i') }}
                                     @endif
                                 @else
                                     N/A

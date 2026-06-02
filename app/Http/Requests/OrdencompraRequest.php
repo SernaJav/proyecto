@@ -75,7 +75,7 @@ class OrdencompraRequest extends FormRequest
             // =========================
             // método de pago (relación)
             // =========================
-            'metodopago_id' => 'required|integer|exists:metodopagos,id',
+            'metodopago_id' => 'nullable|integer|exists:metodopagos,id',
 
             // =========================
             // saldo pendiente

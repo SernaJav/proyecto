@@ -301,37 +301,8 @@
                                         </div>
                                     </div>
 
-                                    {{-- Método de Pago --}}
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                Método de Pago <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-money-bill-wave"></i>
-                                                    </span>
-                                                </div>
-                                                <select
-                                                    name="metodopago_id"
-                                                    id="metodopago_id"
-                                                    class="form-control modern-input"
-                                                    required
-                                                >
-                                                    <option value="">Seleccione método de pago</option>
-                                                    @foreach($metodospago as $metodo)
-                                                        <option value="{{ $metodo->id }}">
-                                                            {{ $metodo->nombre }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
                                     {{-- Abono --}}
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" id="abono_group">
                                         <div class="form-group">
                                             <label class="form-label">
                                                 Abono <span class="text-danger">*</span>
@@ -480,10 +451,12 @@
             let abono = parseFloat(abonoInput.val()) || 0;
 
             if (tipoPago === 'contado') {
+                $('#abono_group').hide();
                 abonoInput.val(subtotal.toFixed(2));
                 abonoInput.prop('readonly', true);
                 $('#saldopendiente').val((0).toFixed(2));
             } else if (tipoPago === 'credito') {
+                $('#abono_group').show();
                 abonoInput.prop('readonly', false);
                 if (abono > subtotal) {
                     abono = subtotal;
@@ -492,6 +465,7 @@
                 let saldo = subtotal - abono;
                 $('#saldopendiente').val(saldo.toFixed(2));
             } else {
+                $('#abono_group').hide();
                 abonoInput.val((0).toFixed(2));
                 abonoInput.prop('readonly', true);
                 $('#saldopendiente').val((0).toFixed(2));

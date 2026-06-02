@@ -253,7 +253,7 @@
                                                     "
                                                 >
 
-                                                    {{ $producto->stockmaximo }} uds
+                                                    {{ $producto->stock }} uds
 
                                                 </span>
 
