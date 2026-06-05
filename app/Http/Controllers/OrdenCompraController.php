@@ -113,6 +113,9 @@ class OrdenCompraController extends Controller
             // actualizar stock de producto (incondicional)
             // =========================
             $producto = Producto::findOrFail($data['producto_id']);
+            if ($producto->stock < $data['cantidad']) {
+                throw new Exception('Stock insuficiente para realizar la compra. Stock disponible: ' . $producto->stock);
+            }
             $producto->stock -= $data['cantidad'];
             $producto->save();
 
@@ -141,7 +144,7 @@ class OrdenCompraController extends Controller
         } catch (Exception $e) {
             \DB::rollBack();
             Log::error($e->getMessage());
-            return back()->withErrors('Ocurrió un error inesperado al crear la orden: ' . $e->getMessage());
+            return back()->withErrors('Ocurrió un error inesperado al crear la orden: ' . $e->getMessage())->withInput();
         }
     }
 
@@ -259,6 +262,9 @@ class OrdenCompraController extends Controller
             // APLICAR nuevo stock (incondicional)
             // ==========================================
             $newProd = Producto::findOrFail($data['producto_id']);
+            if ($newProd->stock < $data['cantidad']) {
+                throw new Exception('Stock insuficiente para actualizar la orden. Stock disponible: ' . $newProd->stock);
+            }
             $newProd->stock -= $data['cantidad'];
             $newProd->save();
 
@@ -301,7 +307,7 @@ class OrdenCompraController extends Controller
         } catch (Exception $e) {
             \DB::rollBack();
             Log::error($e->getMessage());
-            return back()->withErrors('Ocurrió un error inesperado al actualizar la orden: ' . $e->getMessage());
+            return back()->withErrors('Ocurrió un error inesperado al actualizar la orden: ' . $e->getMessage())->withInput();
         }
     }
 

@@ -92,7 +92,7 @@ class ProductoController extends Controller
                 // =========================
                 // stock inicial
                 // =========================
-                'stock' => 0,
+                'stock' => $request->stock,
 
                 'imagen' => $rutaImagen,
 
@@ -215,6 +215,8 @@ class ProductoController extends Controller
                 'descripcion' => $request->descripcion,
 
                 'stockmaximo' => $request->stockmaximo,
+
+                'stock' => $request->stock,
 
                 'imagen' => $rutaImagen
             ]);

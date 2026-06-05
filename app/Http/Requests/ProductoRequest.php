@@ -24,12 +24,14 @@ class ProductoRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = $this->route('producto');
+
         return [
 
             // =========================
             // nombre
             // =========================
-            'nombre' => 'required|string|max:100|unique:productos,nombre',
+            'nombre' => 'required|string|max:100|unique:productos,nombre,' . ($id ?? ''),
 
             // =========================
             // precio
@@ -37,9 +39,14 @@ class ProductoRequest extends FormRequest
             'preciocompra' => 'required|numeric|min:0',
 
             // =========================
-            // stock
+            // stock maximo
             // =========================
             'stockmaximo' => 'required|integer|min:0',
+
+            // =========================
+            // stock actual
+            // =========================
+            'stock' => 'required|integer|min:0',
 
             // =========================
             // descripción
@@ -72,10 +79,19 @@ class ProductoRequest extends FormRequest
                 'El precio debe ser numérico.',
 
             'stockmaximo.required' =>
-                'El stock es obligatorio.',
+                'El stock máximo es obligatorio.',
 
             'stockmaximo.integer' =>
-                'El stock debe ser entero.',
+                'El stock máximo debe ser entero.',
+
+            'stock.required' =>
+                'El stock actual es obligatorio.',
+
+            'stock.integer' =>
+                'El stock actual debe ser entero.',
+
+            'stock.min' =>
+                'El stock actual no puede ser negativo.',
 
             'imagen.image' =>
                 'El archivo debe ser imagen.',

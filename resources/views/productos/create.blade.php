@@ -199,8 +199,49 @@
                                                     type="number"
                                                     name="stockmaximo"
                                                     class="form-control modern-input"
-                                                    placeholder="Ingrese el stock"
+                                                    placeholder="Ingrese el stock máximo"
                                                     value="{{ old('stockmaximo') }}"
+                                                >
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    {{-- ========================= --}}
+                                    {{-- Stock Actual --}}
+                                    {{-- ========================= --}}
+                                    <div class="col-md-6">
+
+                                        <div class="form-group">
+
+                                            <label class="form-label">
+
+                                                Stock actual
+
+                                                <span class="text-danger">*</span>
+
+                                            </label>
+
+                                            <div class="input-group">
+
+                                                <div class="input-group-prepend">
+
+                                                    <span class="input-group-text">
+
+                                                        <i class="fas fa-boxes"></i>
+
+                                                    </span>
+
+                                                </div>
+
+                                                <input
+                                                    type="number"
+                                                    name="stock"
+                                                    class="form-control modern-input"
+                                                    placeholder="Ingrese el stock actual"
+                                                    value="{{ old('stock', 0) }}"
                                                 >
 
                                             </div>

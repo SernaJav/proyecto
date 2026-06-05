@@ -64,7 +64,7 @@
                                                 </div>
                                                 <select
                                                     name="ordencompra_id"
-                                                    class="form-control modern-input"
+                                                    class="form-control modern-input select2"
                                                     required
                                                 >
                                                     <option value="">Seleccione una orden</option>
@@ -95,7 +95,7 @@
                                                 </div>
                                                 <select
                                                     name="producto_id"
-                                                    class="form-control modern-input"
+                                                    class="form-control modern-input select2"
                                                     required
                                                 >
                                                     <option value="">Seleccione un producto</option>
@@ -197,3 +197,15 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%',
+            placeholder: "Selecciona una opción",
+            allowClear: true
+        });
+    });
+</script>
+@endpush
